@@ -50,7 +50,10 @@ export default {
     persistTasks(updatedTasks);
     return updatedTasks;
   },
-  delete: async () => {
-    throw new Error('not implemented');
+  delete: async (uuid) => {
+    const existingTasks = await retrieveTasks();
+    const updatedTasks = existingTasks.filter(task => task.uuid !== uuid);
+    persistTasks(updatedTasks);
+    return updatedTasks;
   },
 };

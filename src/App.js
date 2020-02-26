@@ -36,7 +36,9 @@ export default function App() {
         setError={setError}
       />
       <Container>
-        {!isLoading && tasks.length === 0 && <Flash variant="light">No tasks yet.</Flash>}
+        {!isLoading && tasks.length === 0 && (
+          <Flash variant="light">No tasks yet.</Flash>
+        )}
       </Container>
       <TasksList
         tasks={tasks}
@@ -81,7 +83,7 @@ const TaskForm = (props) => {
 
   return (
     <Container>
-      <Form onSubmit={onSubmit} inline>
+      <Form onSubmit={onSubmit} className="mb-4" inline>
         <Row className="w-100">
           <Col md={8} className="ml-auto">
             <Form.Group controlId="formBasicEmail">
@@ -126,11 +128,36 @@ const TasksList = ({ setTasks, setIsLoading, setError, ...props }) => {
 
   const onCheckChangeFn = (task) => (event) => {
     const isDone = event.target.checked;
-    const updatingTask = { ...task, isDone };
+    patchTask(task, { isDone });    
+  };
+
+  const onClickDescriptionFn = (task) => () => {
+    const foundTask = props.tasks.find(it => it.uuid === task.uuid);
+    if (!foundTask) {
+      return;
+    }
+
+    patchTask(task, { isDone: !foundTask.isDone });
+  }
+
+  const patchTask = (task, patch) => {
+    const updatingTask = { ...task, ...patch };
 
     setIsLoading(true);
     ToDo.update(task.uuid, updatingTask).then((tasks) => {
       setTasks(tasks);
+    }).catch((error) => {
+      setError(error);
+    }).finally(() => {
+      setIsLoading(false);
+    });
+  };
+
+  const onClickDelFn = (task) => () => {
+    setIsLoading(true);
+    ToDo.delete(task.uuid).then((tasks) => {
+      setTasks(tasks);
+      toast('Task deleted!');
     }).catch((error) => {
       setError(error);
     }).finally(() => {
@@ -144,12 +171,25 @@ const TasksList = ({ setTasks, setIsLoading, setError, ...props }) => {
         {props.tasks.map(task => (
           <ListGroup.Item key={task.uuid} className="d-flex">
             <Form.Check
-              type="checkbox"
               onChange={onCheckChangeFn(task)}
+              type="checkbox"
               checked={task.isDone}
               disabled={props.isLoading}
+              className="cursor-pointer"
             />
-            {task.description}
+            <span className="cursor-pointer" onClick={onClickDescriptionFn(task)}>
+              {task.description}
+            </span>
+            <Button
+              onClick={onClickDelFn(task)}
+              variant="danger"
+              type="button"
+              size="sm"
+              className="ml-auto"
+              disabled={props.isLoading}
+            >
+              Del
+            </Button>
           </ListGroup.Item>
         ))}
       </ListGroup>
