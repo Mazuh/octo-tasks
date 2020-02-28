@@ -48,12 +48,12 @@ export default {
       : task
     );
     persistTasks(updatedTasks);
-    return updatedTasks;
+    return updatingTask;
   },
   delete: async (uuid) => {
     const existingTasks = await retrieveTasks();
     const updatedTasks = existingTasks.filter(task => task.uuid !== uuid);
     persistTasks(updatedTasks);
-    return updatedTasks;
+    return { uuid };
   },
 };

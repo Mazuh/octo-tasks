@@ -13,51 +13,81 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'loading':
+      return { ...state, isLoading: true };
+    case 'read':
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        tasks: action.tasks,
+      };
+    case 'created':
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        tasks: [...state.tasks, action.task],
+      };
+    case 'updated':
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        tasks: state.tasks.map(task => task.uuid === action.task.uuid
+          ? action.task
+          : task
+        ),
+      };
+    case 'deleted':
+      return {
+        ...state,
+        isLoading: false,
+        error: null,
+        tasks: state.tasks.filter(task => task.uuid !== action.task.uuid),
+      };
+    case 'error':
+      return { ...state, isLoading: false, error: action.error };
+    default:
+      return state;
+  };
+};
+
 export default function App() {
-  const [tasks, setTasks] = React.useState([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [error, setError] = React.useState(null);
+  const [state, dispatch] = React.useReducer(reducer, {
+    isLoading: true,
+    tasks: [],
+    error: null,
+  });
 
   React.useEffect(() => {
-    if (error) {
-      toast(error.message);
+    if (state.error) {
+      toast(state.error.message);
     }
-  }, [error]);
+  }, [state.error]);
 
   return (
     <div>
-      <AppHeader isLoading={isLoading} />
-      <TaskForm
-        tasks={tasks}
-        setTasks={setTasks}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        error={error}
-        setError={setError}
-      />
+      <AppHeader state={state} dispatch={dispatch} />
+      <TaskForm state={state} dispatch={dispatch} />
       <Container>
-        {!isLoading && tasks.length === 0 && (
+        {!state.isLoading && state.tasks.length === 0 && (
           <Flash variant="light">No tasks yet.</Flash>
         )}
       </Container>
-      <TasksList
-        tasks={tasks}
-        setTasks={setTasks}
-        isLoading={isLoading}
-        setIsLoading={setIsLoading}
-        error={error}
-        setError={setError}
-      />
+      <TasksList state={state} dispatch={dispatch} />
       <ToastContainer />
     </div>
   );
 };
 
-const AppHeader = ({ isLoading }) => (
+const AppHeader = ({ state }) => (
   <Container>
     <h1 className="text-center">
       My tasks app
-      {isLoading && <small> Loading...</small>}
+      {state.isLoading && <small> Loading...</small>}
     </h1>
   </Container>
 );
@@ -67,17 +97,14 @@ const TaskForm = (props) => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    props.setIsLoading(true);
+    props.dispatch({ type: 'loading' });
 
     ToDo.create(description).then((task) => {
-      props.setTasks([...props.tasks, task]);
       setDescription('');
-      props.setError(null);
+      props.dispatch({ type: 'created', task });
       toast('Task created!');
     }).catch((error) => {
-      props.setError(error);
-    }).finally(() => {
-      props.setIsLoading(false);
+      props.dispatch({ type: 'error', error });
     });
   };
 
@@ -94,7 +121,7 @@ const TaskForm = (props) => {
                 autoComplete="off"
                 value={description}
                 onChange={event => setDescription(event.target.value)}
-                disabled={props.isLoading}
+                disabled={props.state.isLoading}
                 required
               />
             </Form.Group>
@@ -103,7 +130,7 @@ const TaskForm = (props) => {
             <Button
               variant="primary"
               type="submit"
-              disabled={props.isLoading}
+              disabled={props.state.isLoading}
             >
               Add
             </Button>
@@ -114,25 +141,22 @@ const TaskForm = (props) => {
   );
 };
 
-const TasksList = ({ setTasks, setIsLoading, setError, ...props }) => {
+const TasksList = ({ dispatch, ...props }) => {
   React.useEffect(() => {
-    ToDo.read().then((retrievedTasks) => {
-      setTasks(retrievedTasks);
-      setError(null);
+    ToDo.read().then((tasks) => {
+      dispatch({ type: 'read', tasks });
     }).catch((error) => {
-      setError(error);
-    }).finally(() => {
-      setIsLoading(false);
+      dispatch({ type: 'error', error });
     });
-  }, [setTasks, setIsLoading, setError]);
+  }, [dispatch]);
 
   const onCheckChangeFn = (task) => (event) => {
     const isDone = event.target.checked;
-    patchTask(task, { isDone });    
+    patchTask(task, { isDone });
   };
 
   const onClickDescriptionFn = (task) => () => {
-    const foundTask = props.tasks.find(it => it.uuid === task.uuid);
+    const foundTask = props.state.tasks.find(it => it.uuid === task.uuid);
     if (!foundTask) {
       return;
     }
@@ -143,32 +167,28 @@ const TasksList = ({ setTasks, setIsLoading, setError, ...props }) => {
   const patchTask = (task, patch) => {
     const updatingTask = { ...task, ...patch };
 
-    setIsLoading(true);
-    ToDo.update(task.uuid, updatingTask).then((tasks) => {
-      setTasks(tasks);
+    dispatch({ type: 'loading' });
+    ToDo.update(task.uuid, updatingTask).then((updated) => {
+      dispatch({ type: 'updated', task: updated });
     }).catch((error) => {
-      setError(error);
-    }).finally(() => {
-      setIsLoading(false);
+      dispatch({ type: 'error', error });
     });
   };
 
   const onClickDelFn = (task) => () => {
-    setIsLoading(true);
-    ToDo.delete(task.uuid).then((tasks) => {
-      setTasks(tasks);
+    dispatch({ type: 'loading' });
+    ToDo.delete(task.uuid).then((deleted) => {
+      dispatch({ type: 'deleted', task: deleted });
       toast('Task deleted!');
     }).catch((error) => {
-      setError(error);
-    }).finally(() => {
-      setIsLoading(false);
+      dispatch({ type: 'error', error });
     });
   };
 
   return (
     <Container>
       <ListGroup>
-        {props.tasks.map(task => (
+        {props.state.tasks.map(task => (
           <ListGroup.Item key={task.uuid} className="d-flex">
             <Form.Check
               onChange={onCheckChangeFn(task)}
@@ -186,7 +206,7 @@ const TasksList = ({ setTasks, setIsLoading, setError, ...props }) => {
               type="button"
               size="sm"
               className="ml-auto"
-              disabled={props.isLoading}
+              disabled={props.state.isLoading}
             >
               Del
             </Button>
