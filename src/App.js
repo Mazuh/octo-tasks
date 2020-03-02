@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
+import { makeReduxAssets } from 'resource-toolkit';
 import Alert from 'react-bootstrap/Alert';
 import ToDo from './services/ToDo';
 
@@ -13,54 +14,31 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'loading':
-      return { ...state, isLoading: true };
-    case 'read':
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        tasks: action.tasks,
-      };
-    case 'created':
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        tasks: [...state.tasks, action.task],
-      };
-    case 'updated':
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        tasks: state.tasks.map(task => task.uuid === action.task.uuid
-          ? action.task
-          : task
-        ),
-      };
-    case 'deleted':
-      return {
-        ...state,
-        isLoading: false,
-        error: null,
-        tasks: state.tasks.filter(task => task.uuid !== action.task.uuid),
-      };
-    case 'error':
-      return { ...state, isLoading: false, error: action.error };
-    default:
-      return state;
-  };
-};
+const tasksResource = makeReduxAssets({
+  name: 'tasks',
+  idKey: 'uuid',
+  gateway: {
+    create: (description) => {
+      return ToDo.create(description);
+    },
+    readMany: () => {
+      return ToDo.read();
+    },
+    update: (task) => {
+      return ToDo.update(task.uuid, task);
+    },
+    delete: (task) => {
+      return ToDo.delete(task.uuid);
+    },
+  },
+});
 
 export default function App() {
-  const [state, dispatch] = React.useReducer(reducer, {
-    isLoading: true,
-    tasks: [],
-    error: null,
-  });
+  const [state, dispatch] = React.useReducer(tasksResource.reducer, tasksResource.initialState);
+  const mappedState = {
+    ...state,
+    tasks: state.items,
+  };
 
   React.useEffect(() => {
     if (state.error) {
@@ -70,14 +48,14 @@ export default function App() {
 
   return (
     <div>
-      <AppHeader state={state} dispatch={dispatch} />
-      <TaskForm state={state} dispatch={dispatch} />
+      <AppHeader state={mappedState} dispatch={dispatch} />
+      <TaskForm state={mappedState} dispatch={dispatch} />
       <Container>
-        {!state.isLoading && state.tasks.length === 0 && (
+        {!mappedState.isLoading && mappedState.tasks.length === 0 && (
           <Flash variant="light">No tasks yet.</Flash>
         )}
       </Container>
-      <TasksList state={state} dispatch={dispatch} />
+      <TasksList state={mappedState} dispatch={dispatch} />
       <ToastContainer />
     </div>
   );
@@ -99,13 +77,12 @@ const TaskForm = (props) => {
     event.preventDefault();
     props.dispatch({ type: 'loading' });
 
-    ToDo.create(description).then((task) => {
-      setDescription('');
-      props.dispatch({ type: 'created', task });
-      toast('Task created!');
-    }).catch((error) => {
-      props.dispatch({ type: 'error', error });
-    });
+    tasksResource.actions
+      .create(description)(props.dispatch)
+      .then(() => {
+        setDescription('');
+        toast('Task created!');
+      });
   };
 
   return (
@@ -143,11 +120,7 @@ const TaskForm = (props) => {
 
 const TasksList = ({ dispatch, ...props }) => {
   React.useEffect(() => {
-    ToDo.read().then((tasks) => {
-      dispatch({ type: 'read', tasks });
-    }).catch((error) => {
-      dispatch({ type: 'error', error });
-    });
+    tasksResource.actions.readAll()(dispatch);
   }, [dispatch]);
 
   const onCheckChangeFn = (task) => (event) => {
@@ -167,21 +140,12 @@ const TasksList = ({ dispatch, ...props }) => {
   const patchTask = (task, patch) => {
     const updatingTask = { ...task, ...patch };
 
-    dispatch({ type: 'loading' });
-    ToDo.update(task.uuid, updatingTask).then((updated) => {
-      dispatch({ type: 'updated', task: updated });
-    }).catch((error) => {
-      dispatch({ type: 'error', error });
-    });
+    tasksResource.actions.update(task.uuid, updatingTask)(dispatch);
   };
 
   const onClickDelFn = (task) => () => {
-    dispatch({ type: 'loading' });
-    ToDo.delete(task.uuid).then((deleted) => {
-      dispatch({ type: 'deleted', task: deleted });
+    tasksResource.actions.delete(task.uuid, task)(dispatch).then(() => {
       toast('Task deleted!');
-    }).catch((error) => {
-      dispatch({ type: 'error', error });
     });
   };
 
