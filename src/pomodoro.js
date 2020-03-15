@@ -6,55 +6,46 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Pomodoro() {
-  const [started, setStarted] = React.useState(false);
-  const [currentPause, setCurrentPause] = React.useState(false);
   const [isRunning, setRunning] = React.useState(false);
-
+  const [start, setStart] = React.useState(0);
   return (
     <div>
         <PomodoroClock
-          started={started}
-          setStarted={setStarted}
-          isRunning={isRunning} 
+          isRunning={isRunning}
           setRunning={setRunning}
-          currentPause={currentPause} 
-          setCurrentPause={setCurrentPause}
-          />
+          start={start}
+          setStart={setStart}
+        />
         <PomodoroActions
-          started={started}
-          setStarted={setStarted}
-          isRunning={isRunning} 
+          isRunning={isRunning}
           setRunning={setRunning}
-          currentPause={currentPause} 
-          setCurrentPause={setCurrentPause}
+          start={start}
+          setStart={setStart}
         />
     </div>
   );
-}; 
-
-const getEndTimestamp = (beginTimestamp, secondsToElapse) => beginTimestamp + secondsToElapse * 60 * 1000;
-const getRemainingTimestamp = (endingTimestamp) => endingTimestamp - Date.now();
+};
 
 const PomodoroClock = (props) => {
-  const totalSeconds = 25;
-  const [remainingSeconds, setRemainingSeconds] = React.useState(totalSeconds * 60);
+  const time = 25;
+  const [remainingSeconds, setRemainingSeconds] = React.useState(0);
 
   React.useEffect(() => {
+    if (props.start === 0) {
+      const initialTimestamp = Date.now();
+      const end = initialTimestamp + time * 60 * 1000;
+      setRemainingSeconds((end - Date.now() + 1)/1000);
+    }
     if (!props.isRunning) {
       return;
     }
-
     const countdown = setInterval(() => {
-      const ending = getEndTimestamp(props.started, totalSeconds);
-      const remaining = getRemainingTimestamp(ending);
-
-      if (props.isRunning) {
-        setRemainingSeconds(remaining / 1000);
-      }
+      const end = props.start + time * 60 * 1000;
+      setRemainingSeconds((end - Date.now())/1000);
     }, 200);
 
     return () => clearInterval(countdown);
-  }, [props.started, props.isRunning]);
+  }, [props]);
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
@@ -68,24 +59,25 @@ const PomodoroClock = (props) => {
 };
 
 const PomodoroActions = (props) => {
-  const start = () => {
-    if (!props.started) {
-      props.setStarted(Date.now());
-    } else if (props.currentPause) {
-      props.setStarted(props.currentPause + Date.now()); // fixme
-      props.setCurrentPause(false);
-    }
+  const [currentPause, setCurrentPause] = React.useState(0);
 
-    props.setRunning(true);
+  const start = () => {
+    if (props.start === 0) {
+      props.setStart(Date.now());
+    } else {
+      props.setStart(props.start + Date.now() - currentPause);
+    }
+    props.setRunning(true)
   };
 
   const pause = () => {
-    props.setCurrentPause(Date.now());
     props.setRunning(false);
+    setCurrentPause(Date.now());
   };
 
   const reset = () => {
-    props.setStarted(Date.now());
+    props.setStart(0);
+    props.setRunning(false);
   };
 
   return (
