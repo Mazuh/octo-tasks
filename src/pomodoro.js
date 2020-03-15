@@ -6,30 +6,58 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function Pomodoro() {
+  const [started, setStarted] = React.useState(false);
+  const [currentPause, setCurrentPause] = React.useState(false);
+  const [isRunning, setRunning] = React.useState(false);
+
   return (
     <div>
-        <PomodoroClock Time='25'/>
-        <PomodoroActions />
+        <PomodoroClock
+          started={started}
+          setStarted={setStarted}
+          isRunning={isRunning} 
+          setRunning={setRunning}
+          currentPause={currentPause} 
+          setCurrentPause={setCurrentPause}
+          />
+        <PomodoroActions
+          started={started}
+          setStarted={setStarted}
+          isRunning={isRunning} 
+          setRunning={setRunning}
+          currentPause={currentPause} 
+          setCurrentPause={setCurrentPause}
+        />
     </div>
   );
 }; 
 
-const PomodoroClock = (props) => {
-  const [currentTime, setCurrentTime] = React.useState(props.Time*60);
-  
-  React.useEffect(() => {
-    const initialTimeStamp = Date.now();
-    const endTimeStamp = initialTimeStamp + props.Time*60*1000;
+const getEndTimestamp = (beginTimestamp, secondsToElapse) => beginTimestamp + secondsToElapse * 60 * 1000;
+const getRemainingTimestamp = (endingTimestamp) => endingTimestamp - Date.now();
 
-    const countDown = setInterval(() => {
-      setCurrentTime((endTimeStamp - Date.now())/1000)
+const PomodoroClock = (props) => {
+  const totalSeconds = 25;
+  const [remainingSeconds, setRemainingSeconds] = React.useState(totalSeconds * 60);
+
+  React.useEffect(() => {
+    if (!props.isRunning) {
+      return;
+    }
+
+    const countdown = setInterval(() => {
+      const ending = getEndTimestamp(props.started, totalSeconds);
+      const remaining = getRemainingTimestamp(ending);
+
+      if (props.isRunning) {
+        setRemainingSeconds(remaining / 1000);
+      }
     }, 200);
 
-    return () => clearInterval(countDown);
-  }, [props.Time]);
+    return () => clearInterval(countdown);
+  }, [props.started, props.isRunning]);
 
-  const minutes = String(Math.floor(currentTime/60)).padStart(2, 0)
-  const seconds = String(Math.floor(currentTime%60)).padStart(2, 0)
+  const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
+  const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
   return (
     <Container>
       <h1 className='text-center'>
@@ -39,14 +67,26 @@ const PomodoroClock = (props) => {
   );
 };
 
-const PomodoroActions = () => {
-  const [started, setStarted] = React.useState(false);
-  const [stoped, setStoped] = React.useState(true);
+const PomodoroActions = (props) => {
+  const start = () => {
+    if (!props.started) {
+      props.setStarted(Date.now());
+    } else if (props.currentPause) {
+      props.setStarted(props.currentPause + Date.now()); // fixme
+      props.setCurrentPause(false);
+    }
 
-  const onClick = () => {
-    setStoped(!stoped);
-    setStarted(!started);
-  }
+    props.setRunning(true);
+  };
+
+  const pause = () => {
+    props.setCurrentPause(Date.now());
+    props.setRunning(false);
+  };
+
+  const reset = () => {
+    props.setStarted(Date.now());
+  };
 
   return (
     <Container>
@@ -55,8 +95,8 @@ const PomodoroActions = () => {
           className='ml-auto mr-2'
           variant='primary'
           type='button'
-          disabled={started}
-          onClick={onClick}
+          disabled={props.isRunning}
+          onClick={start}
         >
           Start
         </Button>
@@ -64,15 +104,16 @@ const PomodoroActions = () => {
           className='ml-2 mr-2'
           variant='danger'
           type='button'
-          disabled={stoped}
-          onClick={onClick}
+          disabled = {!props.isRunning}
+          onClick={pause}
         >
-          Stop
+          Pause
         </Button>
         <Button
           className='mr-auto ml-2'
           variant='secondary'
           type='button'
+          onClick={reset}
         >
           Reset
         </Button>

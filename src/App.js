@@ -124,24 +124,24 @@ const TasksList = ({ dispatch, ...props }) => {
   React.useEffect(() => {
     tasksResource.actions.readAll()(dispatch);
   }, [dispatch]);
-
+  
   const onCheckChangeFn = (task) => (event) => {
     const isDone = event.target.checked;
     patchTask(task, { isDone });
   };
-
+  
   const onClickDescriptionFn = (task) => () => {
     const foundTask = props.state.tasks.find(it => it.uuid === task.uuid);
     if (!foundTask) {
       return;
     }
-
+    
     patchTask(task, { isDone: !foundTask.isDone });
   }
-
+  
   const patchTask = (task, patch) => {
     const updatingTask = { ...task, ...patch };
-
+    
     tasksResource.actions.update(task.uuid, updatingTask)(dispatch);
   };
 
