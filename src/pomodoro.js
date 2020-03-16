@@ -1,32 +1,32 @@
-import React from 'react';
-import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
-import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
+import React from "react";
+import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function Pomodoro() {
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
   return (
     <div>
-        <PomodoroClock
-          isRunning={isRunning}
-          setRunning={setRunning}
-          start={start}
-          setStart={setStart}
-        />
-        <PomodoroActions
-          isRunning={isRunning}
-          setRunning={setRunning}
-          start={start}
-          setStart={setStart}
-        />
+      <PomodoroClock
+        isRunning={isRunning}
+        setRunning={setRunning}
+        start={start}
+        setStart={setStart}
+      />
+      <PomodoroActions
+        isRunning={isRunning}
+        setRunning={setRunning}
+        start={start}
+        setStart={setStart}
+      />
     </div>
   );
-};
+}
 
-const PomodoroClock = (props) => {
+const PomodoroClock = props => {
   const time = 25;
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
 
@@ -34,14 +34,14 @@ const PomodoroClock = (props) => {
     if (props.start === 0) {
       const initialTimestamp = Date.now();
       const end = initialTimestamp + time * 60 * 1000;
-      setRemainingSeconds((end - Date.now() + 1)/1000);
+      setRemainingSeconds((end - Date.now() + 1) / 1000);
     }
     if (!props.isRunning) {
       return;
     }
     const countdown = setInterval(() => {
       const end = props.start + time * 60 * 1000;
-      setRemainingSeconds((end - Date.now())/1000);
+      setRemainingSeconds((end - Date.now()) / 1000);
     }, 200);
 
     return () => clearInterval(countdown);
@@ -51,14 +51,12 @@ const PomodoroClock = (props) => {
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
   return (
     <Container>
-      <h1 className='text-center'>
-        {minutes+':'+seconds}
-      </h1>
+      <h1 className="text-center">{minutes + ":" + seconds}</h1>
     </Container>
   );
 };
 
-const PomodoroActions = (props) => {
+const PomodoroActions = props => {
   const [currentPause, setCurrentPause] = React.useState(0);
 
   const start = () => {
@@ -67,7 +65,7 @@ const PomodoroActions = (props) => {
     } else {
       props.setStart(props.start + Date.now() - currentPause);
     }
-    props.setRunning(true)
+    props.setRunning(true);
   };
 
   const pause = () => {
@@ -84,32 +82,32 @@ const PomodoroActions = (props) => {
     <Container>
       <ButtonToolbar>
         <Button
-          className='ml-auto mr-2'
-          variant='primary'
-          type='button'
+          className="ml-auto mr-2"
+          variant="primary"
+          type="button"
           disabled={props.isRunning}
           onClick={start}
         >
           Start
         </Button>
         <Button
-          className='ml-2 mr-2'
-          variant='danger'
-          type='button'
-          disabled = {!props.isRunning}
+          className="ml-2 mr-2"
+          variant="danger"
+          type="button"
+          disabled={!props.isRunning}
           onClick={pause}
         >
           Pause
         </Button>
         <Button
-          className='mr-auto ml-2'
-          variant='secondary'
-          type='button'
+          className="mr-auto ml-2"
+          variant="secondary"
+          type="button"
           onClick={reset}
         >
           Reset
         </Button>
       </ButtonToolbar>
     </Container>
-  ); 
+  );
 };
