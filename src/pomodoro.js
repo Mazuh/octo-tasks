@@ -8,9 +8,21 @@ import "bootstrap/dist/css/bootstrap.min.css";
 export default function Pomodoro() {
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
+  const [time, setTime] = React.useState(25);
+
   return (
     <div>
+      <PomodoroTabs
+        time={time}
+        setTime={setTime}
+        isRunning={isRunning}
+        setRunning={setRunning}
+        start={start}
+        setStart={setStart}
+      />
       <PomodoroClock
+        time={time}
+        setTime={setTime}
         isRunning={isRunning}
         setRunning={setRunning}
         start={start}
@@ -27,20 +39,19 @@ export default function Pomodoro() {
 }
 
 const PomodoroClock = props => {
-  const time = 25;
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
 
   React.useEffect(() => {
     if (props.start === 0) {
       const initialTimestamp = Date.now();
-      const end = initialTimestamp + time * 60 * 1000;
+      const end = initialTimestamp + props.time * 60 * 1000;
       setRemainingSeconds((end - Date.now() + 1) / 1000);
     }
     if (!props.isRunning) {
       return;
     }
     const countdown = setInterval(() => {
-      const end = props.start + time * 60 * 1000;
+      const end = props.start + props.time * 60 * 1000;
       setRemainingSeconds((end - Date.now()) / 1000);
     }, 200);
 
@@ -106,6 +117,73 @@ const PomodoroActions = props => {
           onClick={reset}
         >
           Reset
+        </Button>
+      </ButtonToolbar>
+    </Container>
+  );
+};
+
+const PomodoroTabs = props => {
+  const [pomorodo, setPomodoro] = React.useState(true);
+  const [shotBreak, setShortBreak] = React.useState(false);
+  const [longBreak, setLongBreak] = React.useState(false);
+
+  const pomorodoOnClick = () => {
+    props.setTime(25);
+    props.setStart(0);
+    props.setRunning(false);
+    setPomodoro(true);
+    setShortBreak(false);
+    setLongBreak(false);
+  };
+
+  const shortBreakOnClick = () => {
+    props.setTime(5);
+    props.setStart(0);
+    props.setRunning(false);
+    setPomodoro(false);
+    setShortBreak(true);
+    setLongBreak(false);
+  };
+
+  const longBreakOnClick = () => {
+    props.setTime(10);
+    props.setStart(0);
+    props.setRunning(false);
+    setPomodoro(false);
+    setShortBreak(false);
+    setLongBreak(true);
+  };
+
+  return (
+    <Container>
+      <ButtonToolbar>
+        <Button
+          className="ml-auto mr-2"
+          variant="primary"
+          type="button"
+          disabled={pomorodo}
+          onClick={pomorodoOnClick}
+        >
+          Pomodoro
+        </Button>
+        <Button
+          className="ml-2 mr-2"
+          variant="primary"
+          type="button"
+          disabled={shotBreak}
+          onClick={shortBreakOnClick}
+        >
+          Short Break
+        </Button>
+        <Button
+          className="mr-auto ml-2"
+          variant="primary"
+          type="button"
+          disabled={longBreak}
+          onClick={longBreakOnClick}
+        >
+          Long Break
         </Button>
       </ButtonToolbar>
     </Container>
