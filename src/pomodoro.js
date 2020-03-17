@@ -47,6 +47,10 @@ const PomodoroClock = props => {
       const end = initialTimestamp + props.time * 60 * 1000;
       setRemainingSeconds((end - Date.now() + 1) / 1000);
     }
+    if (remainingSeconds < 0) {
+      setRemainingSeconds(0);
+      return;
+    }
     if (!props.isRunning) {
       return;
     }
@@ -56,7 +60,7 @@ const PomodoroClock = props => {
     }, 200);
 
     return () => clearInterval(countdown);
-  }, [props]);
+  }, [props, remainingSeconds]);
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
