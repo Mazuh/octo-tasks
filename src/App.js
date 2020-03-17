@@ -9,6 +9,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { makeReduxAssets } from 'resource-toolkit';
 import Alert from 'react-bootstrap/Alert';
 import ToDo from './services/ToDo';
+import Pomodoro from './pomodoro.js'
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -49,6 +50,7 @@ export default function App() {
   return (
     <div>
       <AppHeader state={mappedState} dispatch={dispatch} />
+      <Pomodoro />
       <TaskForm state={mappedState} dispatch={dispatch} />
       <Container>
         {!mappedState.isLoading && mappedState.tasks.length === 0 && (
@@ -122,24 +124,24 @@ const TasksList = ({ dispatch, ...props }) => {
   React.useEffect(() => {
     tasksResource.actions.readAll()(dispatch);
   }, [dispatch]);
-
+  
   const onCheckChangeFn = (task) => (event) => {
     const isDone = event.target.checked;
     patchTask(task, { isDone });
   };
-
+  
   const onClickDescriptionFn = (task) => () => {
     const foundTask = props.state.tasks.find(it => it.uuid === task.uuid);
     if (!foundTask) {
       return;
     }
-
+    
     patchTask(task, { isDone: !foundTask.isDone });
   }
-
+  
   const patchTask = (task, patch) => {
     const updatingTask = { ...task, ...patch };
-
+    
     tasksResource.actions.update(task.uuid, updatingTask)(dispatch);
   };
 
