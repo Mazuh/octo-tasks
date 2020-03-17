@@ -54,12 +54,12 @@ const PomodoroClock = props => {
     if (!props.isRunning) {
       return;
     }
-    const countdown = setInterval(() => {
+    const countdown = setTimeout(() => {
       const end = props.start + props.time * 60 * 1000;
       setRemainingSeconds((end - Date.now()) / 1000);
     }, 200);
 
-    return () => clearInterval(countdown);
+    return () => clearTimeout(countdown);
   }, [props, remainingSeconds]);
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
@@ -128,35 +128,19 @@ const PomodoroActions = props => {
 };
 
 const PomodoroTabs = props => {
-  const [pomorodo, setPomodoro] = React.useState(true);
-  const [shotBreak, setShortBreak] = React.useState(false);
-  const [longBreak, setLongBreak] = React.useState(false);
+  const [type, setType] = React.useState("pomodoro");
 
-  const pomorodoOnClick = () => {
-    props.setTime(25);
-    props.setStart(0);
-    props.setRunning(false);
-    setPomodoro(true);
-    setShortBreak(false);
-    setLongBreak(false);
+  const timers = {
+    pomodoro: 25,
+    shortBreak: 5,
+    longBreak: 10
   };
 
-  const shortBreakOnClick = () => {
-    props.setTime(5);
+  const setTimerType = type => {
+    props.setTime(timers[type]);
+    setType(type);
     props.setStart(0);
     props.setRunning(false);
-    setPomodoro(false);
-    setShortBreak(true);
-    setLongBreak(false);
-  };
-
-  const longBreakOnClick = () => {
-    props.setTime(10);
-    props.setStart(0);
-    props.setRunning(false);
-    setPomodoro(false);
-    setShortBreak(false);
-    setLongBreak(true);
   };
 
   return (
@@ -166,8 +150,10 @@ const PomodoroTabs = props => {
           className="ml-auto mr-2"
           variant="primary"
           type="button"
-          disabled={pomorodo}
-          onClick={pomorodoOnClick}
+          disabled={type === "pomodoro"}
+          onClick={() => {
+            setTimerType("pomodoro");
+          }}
         >
           Pomodoro
         </Button>
@@ -175,8 +161,10 @@ const PomodoroTabs = props => {
           className="ml-2 mr-2"
           variant="primary"
           type="button"
-          disabled={shotBreak}
-          onClick={shortBreakOnClick}
+          disabled={type === "shortBreak"}
+          onClick={() => {
+            setTimerType("shortBreak");
+          }}
         >
           Short Break
         </Button>
@@ -184,8 +172,10 @@ const PomodoroTabs = props => {
           className="mr-auto ml-2"
           variant="primary"
           type="button"
-          disabled={longBreak}
-          onClick={longBreakOnClick}
+          disabled={type === "longBreak"}
+          onClick={() => {
+            setTimerType("longBreak");
+          }}
         >
           Long Break
         </Button>
