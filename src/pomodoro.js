@@ -1,6 +1,6 @@
-import React from "react";
-import Button from "react-bootstrap/Button";
-import ButtonToolbar from "react-bootstrap/ButtonToolbar";
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
 export default function Pomodoro({ type, setType }) {
   const [isRunning, setRunning] = React.useState(false);
@@ -65,7 +65,7 @@ const PomodoroClock = props => {
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
   return (
     <div className="pomorodo__time d-flex justify-content-center align-items-center flex-grow-1">
-      {minutes + ":" + seconds}
+      {minutes + ':' + seconds}
     </div>
   );
 };
@@ -145,9 +145,9 @@ const PomodoroTabs = ({ type, setType, ...props }) => {
         className="ml-auto mr-2"
         variant="primary"
         type="button"
-        disabled={type === "pomodoro"}
+        disabled={type === 'pomodoro'}
         onClick={() => {
-          setTimerType("pomodoro");
+          setTimerType('pomodoro');
         }}
       >
         Pomodoro
@@ -156,9 +156,9 @@ const PomodoroTabs = ({ type, setType, ...props }) => {
         className="ml-2 mr-2"
         variant="primary"
         type="button"
-        disabled={type === "shortBreak"}
+        disabled={type === 'shortBreak'}
         onClick={() => {
-          setTimerType("shortBreak");
+          setTimerType('shortBreak');
         }}
       >
         Short Break
@@ -167,9 +167,9 @@ const PomodoroTabs = ({ type, setType, ...props }) => {
         className="mr-auto ml-2"
         variant="primary"
         type="button"
-        disabled={type === "longBreak"}
+        disabled={type === 'longBreak'}
         onClick={() => {
-          setTimerType("longBreak");
+          setTimerType('longBreak');
         }}
       >
         Long Break
