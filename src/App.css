@@ -1,3 +1,49 @@
-.cursor-pointer{
+.cursor-pointer {
   cursor: pointer;
+}
+
+.navbar {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.container {
+  max-width: 35rem;
+}
+
+.list-group-item {
+  border-width: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  margin-bottom: 0.5rem;
+  border-radius: 3px;
+}
+
+#content {
+  min-height: calc(100vh - 56px);
+}
+
+.wrapper {
+  color: var(--white);
+  transition: background-color 0.4s;
+}
+
+.wrapper--pomodoro {
+  background-color: var(--red);
+}
+
+.wrapper--shortBreak {
+  background-color: var(--green);
+}
+
+.wrapper--longBreak {
+  background-color: var(--info);
+}
+
+.pomorodo__wrapper {
+  flex-basis: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.pomorodo__time {
+  font-size: 10em;
+  font-family: "Dosis", sans-serif;
 }
