@@ -2,14 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 const TASKS_KEY = 'tasks';
 
-export const retrieveTasks = () => {
-  return new Promise((resolve) => {
+export const retrieveTasks = async () => {
     const serialized = localStorage.getItem(TASKS_KEY);
     const tasks = serialized ? JSON.parse(serialized) : [];
-    setTimeout(() => {
-      resolve(tasks);
-    }, 3000);
-  });
+    return tasks;
 };
 
 export const persistTasks = (tasks) => {
