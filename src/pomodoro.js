@@ -25,6 +25,7 @@ export default function Pomodoro({ type, setType }) {
         isRunning={isRunning}
         setRunning={setRunning}
         start={start}
+        type={type}
         setStart={setStart}
       />
       <PomodoroActions
@@ -63,6 +64,17 @@ const PomodoroClock = props => {
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
+  
+  const types = {
+    pomodoro: 'Pomodoro',
+    shortBreak: 'Short Break',
+    longBreak: 'Long Break' 
+  }
+
+  React.useEffect(() => {
+    document.title = `${minutes}:${seconds} ${types[props.type]}`
+  }, [minutes, seconds, props.type, types])
+
   return (
     <div className="pomorodo__time d-flex justify-content-center align-items-center flex-grow-1">
       {minutes + ':' + seconds}
