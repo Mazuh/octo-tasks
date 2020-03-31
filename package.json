@@ -1,6 +1,8 @@
 {
+  "homepage": "./",
   "name": "my-app",
   "version": "0.1.0",
+  "main": "electron/electron.js",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
@@ -10,14 +12,34 @@
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
-    "react-scripts": "3.4.0",
     "react-toastify": "^5.5.0",
     "resource-toolkit": "^0.9.0",
-    "uuid": "^7.0.0"
+    "uuid": "^7.0.0",
+    "electron-is-dev": "^1.0.1"
+  },
+  "build": {
+    "linux": {
+      "target": "deb",
+      "maintainer": "Gustavo Freire",
+      "category": "Development",
+      "icon": "icons/icon.png"
+    },
+    "appId": "com.example.electron-cra",
+    "files": [
+      "./electron/electron.js",
+      "build/**/*",
+      "build/static/**/*"
+    ],
+    "directories": {
+      "buildResources": "resources",
+      "output": "electron-build"
+    }
   },
   "scripts": {
     "start": "react-scripts start",
+    "start-electron": "concurrently \"BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "build": "react-scripts build",
+    "electron-pack": "electron-builder",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prettier": "./node_modules/.bin/prettier —-write '**/*.js'"
@@ -38,6 +60,11 @@
     ]
   },
   "devDependencies": {
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "electron": "^8.0.0",
+    "electron-builder": "^22.3.2",
+    "electron-rebuild": "^1.10.0",
+    "concurrently": "^5.1.0",
+    "wait-on": "^4.0.0"
   }
 }
