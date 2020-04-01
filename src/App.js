@@ -76,7 +76,7 @@ const Wrapper = ({ children, type }) => (
 const AppHeader = ({ state }) => (
   <Navbar expand="lg" variant="dark">
     <Container>
-      <Navbar.Brand>My tasks app</Navbar.Brand>
+      <Navbar.Brand>Octo-tasks</Navbar.Brand>
       <Navbar.Text>{state.isLoading && <small> Loading...</small>}</Navbar.Text>
     </Container>
   </Navbar>

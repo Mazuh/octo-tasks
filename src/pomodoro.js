@@ -1,6 +1,13 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Push from 'push.js';
+
+const types = {
+  pomodoro: 'Pomodoro',
+  shortBreak: 'Short Break',
+  longBreak: 'Long Break' 
+}
 
 export default function Pomodoro({ type, setType }) {
   const [isRunning, setRunning] = React.useState(false);
@@ -47,16 +54,27 @@ const PomodoroClock = props => {
       const end = initialTimestamp + props.time * 60 * 1000;
       setRemainingSeconds((end - Date.now() + 1) / 1000);
     }
-    if (remainingSeconds < 0) {
-      setRemainingSeconds(0);
-      return;
-    }
+
     if (!props.isRunning) {
       return;
     }
     const countdown = setTimeout(() => {
       const end = props.start + props.time * 60 * 1000;
-      setRemainingSeconds((end - Date.now()) / 1000);
+      const nextRemainingSeconds = (end - Date.now() + 1) / 1000;
+      if (nextRemainingSeconds >= 0) {
+        setRemainingSeconds(nextRemainingSeconds);
+      } else {
+        Push.create("Octo-tasks", {
+          body: `${types[props.type]} is over!`,
+          tag: 'done',
+          icon:'',
+          timeout: 4000,
+          onClick: () => {
+            window.focus();
+            Push.close();
+          }
+        });   
+      } 
     }, 200);
 
     return () => clearTimeout(countdown);
@@ -65,15 +83,10 @@ const PomodoroClock = props => {
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
   
-  const types = {
-    pomodoro: 'Pomodoro',
-    shortBreak: 'Short Break',
-    longBreak: 'Long Break' 
-  }
 
   React.useEffect(() => {
     document.title = `${minutes}:${seconds} ${types[props.type]}`
-  }, [minutes, seconds, props.type, types])
+  }, [minutes, seconds, props.type])
 
   return (
     <div className="pomorodo__time d-flex justify-content-center align-items-center flex-grow-1">
