@@ -9,13 +9,14 @@
     "@testing-library/react": "^9.4.1",
     "@testing-library/user-event": "^7.2.1",
     "bootstrap": "^4.4.1",
+    "electron-is-dev": "^1.0.1",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "^16.12.0",
+    "react-scripts": "^3.4.1",
     "react-toastify": "^5.5.0",
     "resource-toolkit": "^0.9.0",
-    "uuid": "^7.0.0",
-    "electron-is-dev": "^1.0.1"
+    "uuid": "^7.0.0"
   },
   "build": {
     "linux": {
