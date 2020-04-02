@@ -1,6 +1,7 @@
 import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
+import Settings from './settings';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -56,6 +57,7 @@ export default function App() {
   return (
     <Wrapper type={type}>
       <AppHeader state={mappedState} dispatch={dispatch} />
+      <Settings />
       <Container id="content" className="d-flex flex-column">
         <Pomodoro type={type} setType={setType} />
         <TaskForm state={mappedState} dispatch={dispatch} />
@@ -77,7 +79,7 @@ const AppHeader = ({ state }) => (
   <Navbar expand="lg" variant="dark">
     <Container>
       <Navbar.Brand>My tasks app</Navbar.Brand>
-      <Navbar.Text>{state.isLoading && <small> Loading...</small>}</Navbar.Text>
+      <Navbar.Text>{state.isLoading ? (<small> Loading...</small>) : (<a>config</a>)}</Navbar.Text>
     </Container>
   </Navbar>
 );
