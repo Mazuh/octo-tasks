@@ -2,8 +2,6 @@ import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
 import Settings from './settings';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
@@ -11,8 +9,9 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { makeReduxAssets } from 'resource-toolkit';
 import Alert from 'react-bootstrap/Alert';
-import ToDo from './services/ToDo';
+import ToDo, { retrieveTasks } from './services/ToDo';
 import Pomodoro from './pomodoro.js';
+import { retrieveSettings } from './services/settings';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -54,6 +53,7 @@ export default function App() {
     }
   }, [state.error]);
 
+  window.retrievedSettings = retrieveSettings;
   return (
     <Wrapper type={type}>
       <AppHeader state={mappedState} dispatch={dispatch} />

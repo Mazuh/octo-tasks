@@ -1,14 +1,14 @@
 const SETTINGS_KEY = 'octo-settings';
 
 const initialSettings = {
-  promodoro: 25,
+  pomodoro: 25,
   shortBreak: 5,
   longBreak: 10,
 }
 
-export const retrieveSettings = async () => {
+export const retrieveSettings = () => {
   const serialized = localStorage.getItem(SETTINGS_KEY);
-  const settings = serialized ? JSON.parse(serialized) : [];
+  const settings = serialized ? JSON.parse(serialized) : [initialSettings];
   return settings;
 }
 

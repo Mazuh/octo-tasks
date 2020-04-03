@@ -4,13 +4,19 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
-import { persistSettings } from './services/settings';
+import { persistSettings, retrieveSettings } from './services/settings';
 
 const SettingsForm = props => {
   const shimSubmitEvent = fn => event => {
     event.preventDefault(); 
     fn(event);
   }
+
+  const [settings, updateSettings] = React.useState(retrieveSettings);
+
+  React.useEffect(() => {
+    persistSettings(settings);
+  }, [settings]);
 
   return (
     <Container>
@@ -24,6 +30,8 @@ const SettingsForm = props => {
               className="w-100"
               placeholder="promodoro"
               autoComplete="off"
+              value={settings.pomodoro}
+              onChange={event => updateSettings({...settings, pomodoro: event.target.value})}
               required
             />
           </Row>
@@ -37,6 +45,8 @@ const SettingsForm = props => {
               className="w-100"
               placeholder="short break"
               autoComplete="off"
+              value={settings.shortBreak}
+              onChange={event => updateSettings({...settings, shortBreak: event.target.value})}
               required
             />
           </Row>
@@ -50,6 +60,8 @@ const SettingsForm = props => {
               className="w-100"
               placeholder="long break"
               autoComplete="off"
+              value={settings.longBreak}
+              onChange={event => updateSettings({...settings, longBreak: event.target.value})}
               required
             />
           </Row>
@@ -73,9 +85,6 @@ export default (props) => {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => props.setShow(false)}>
             Close
-          </Button>
-          <Button variant="primary" onClick={() => props.setShow(false)}>
-            Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
