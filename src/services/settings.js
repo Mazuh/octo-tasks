@@ -6,12 +6,18 @@ const initialSettings = {
   longBreak: 10,
 }
 
-export const retrieveSettings = () => {
+const retrieveSettings = async () => {
   const serialized = localStorage.getItem(SETTINGS_KEY);
-  const settings = serialized ? JSON.parse(serialized) : [initialSettings];
+  const settings = serialized ? JSON.parse(serialized) : initialSettings;
   return settings;
 }
 
-export const persistSettings = async settings => {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+const persistSettings = async settings => {
+  const serialized = JSON.stringify(settings);
+  localStorage.setItem(SETTINGS_KEY, serialized);
 }
+
+export default {
+  read: retrieveSettings,
+  update: persistSettings,
+};
