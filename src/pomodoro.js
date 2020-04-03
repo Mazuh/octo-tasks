@@ -177,9 +177,9 @@ const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
   }, [timers, type, setTime]);
 
   return (
-    <ButtonToolbar>
+    <ButtonToolbar className="d-none d-md-flex justify-content-around">
       <Button
-        className="ml-auto mr-2"
+        className="mb-3 col-sm-3"
         variant="primary"
         type="button"
         disabled={type === 'pomodoro'}
@@ -190,7 +190,7 @@ const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
         Pomodoro
       </Button>
       <Button
-        className="ml-2 mr-2"
+        className="mb-3 col-sm-3"
         variant="primary"
         type="button"
         disabled={type === 'shortBreak'}
@@ -201,7 +201,7 @@ const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
         Short Break
       </Button>
       <Button
-        className="mr-auto ml-2"
+        className="mb-3 col-sm-3"
         variant="primary"
         type="button"
         disabled={type === 'longBreak'}
