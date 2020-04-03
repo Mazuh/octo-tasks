@@ -1,7 +1,8 @@
 import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
+import Row from 'react-bootstrap/Row';
+import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import { persistSettings } from './services/settings';
 
@@ -12,54 +13,57 @@ const SettingsForm = props => {
   }
 
   return (
-      <Form onSubmit={shimSubmitEvent((e) => console.log(e))} className="mb-4">
-        <InputGroup>
-          <label htmlFor="promodoro">Promodoro</label>
-          <Form.Control
-            id="promodoro"
-            name="promodoro"
-            className="w-100"
-            placeholder="promodoro"
-            autoComplete="off"
-            required
-          />
-          <label htmlForm="shortbreak">Shortbreak</label>
-          <Form.Control
-            id="shortbreak"
-            name="shortbreak"
-            className="w-100"
-            placeholder="short break"
-            autoComplete="off"
-            required
-          />
-          <label htmlForm="longbreak">Longbreak</label>
-          <Form.Control
-            id="longbreak"
-            name="longbreak"
-            className="w-100"
-            placeholder="long break"
-            autoComplete="off"
-            required
-          />
-        </InputGroup>
+    <Container>
+      <Form className="p-3" onSubmit={shimSubmitEvent((e) => console.log(e))} className="mb-4">
+        <Form.Group>
+          <Row>
+            <Form.Label>Promodoro</Form.Label>
+            <Form.Control
+              id="promodoro"
+              name="promodoro"
+              className="w-100"
+              placeholder="promodoro"
+              autoComplete="off"
+              required
+            />
+          </Row>
+        </Form.Group>
+        <Form.Group>
+          <Row>
+            <Form.Label>Shortbreak</Form.Label>
+            <Form.Control
+              id="shortbreak"
+              name="shortbreak"
+              className="w-100"
+              placeholder="short break"
+              autoComplete="off"
+              required
+            />
+          </Row>
+        </Form.Group>
+        <Form.Group>
+          <Row>
+            <Form.Label>Longbreak</Form.Label>
+            <Form.Control
+              id="longbreak"
+              name="longbreak"
+              className="w-100"
+              placeholder="long break"
+              autoComplete="off"
+              required
+            />
+          </Row>
+        </Form.Group>
       </Form>
+    </Container>
   );
 };
 
 
-export default () => {
-  const [show, setShow] = React.useState(false);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+export default (props) => {
   return (
     <>
-      <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button>
-
-      <Modal show={show} onHide={handleClose} animation={false}>
+      <Modal show={props.show} onHide={() => props.setShow(false)} animation={false}>
         <Modal.Header closeButton>
           <Modal.Title>Settings</Modal.Title>
         </Modal.Header>
@@ -67,14 +71,14 @@ export default () => {
           <SettingsForm/>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={() => props.setShow(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <Button variant="primary" onClick={() => props.setShow(false)}>
             Save Changes
           </Button>
         </Modal.Footer>
       </Modal>
     </>
   );
-}
+};

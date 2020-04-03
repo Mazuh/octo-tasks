@@ -75,14 +75,31 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state }) => (
-  <Navbar expand="lg" variant="dark">
-    <Container>
-      <Navbar.Brand>My tasks app</Navbar.Brand>
-      <Navbar.Text>{state.isLoading ? (<small> Loading...</small>) : (<a>config</a>)}</Navbar.Text>
-    </Container>
-  </Navbar>
-);
+const AppHeader = ({ state }) => {
+  const [show, setShow] = React.useState(false);
+
+  return (
+    <Navbar expand="lg" variant="dark">
+      <Container>
+          <Settings
+            setShow={setShow}
+            show={show}
+          />
+        <Navbar.Brand>My tasks app</Navbar.Brand>
+        <Navbar.Text>
+          {state.isLoading ? (
+            <small> Loading...</small>
+            ) : (
+            <Button variant="primary" onClick={() => setShow(true)}>
+              Config
+            </Button>
+            )
+          }
+        </Navbar.Text>
+      </Container>
+    </Navbar>
+  );
+};
 
 const TaskForm = props => {
   const [description, setDescription] = React.useState('');
