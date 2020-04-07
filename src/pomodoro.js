@@ -3,13 +3,15 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Push from 'push.js';
 
+import Settings from './services/Settings';
+
 const types = {
   pomodoro: 'Pomodoro',
   shortBreak: 'Short Break',
   longBreak: 'Long Break' 
 }
 
-export default function Pomodoro({ type, setType }) {
+export default function Pomodoro({ type, setType, timers, setTimers }) {
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
   const [time, setTime] = React.useState(25);
@@ -25,6 +27,8 @@ export default function Pomodoro({ type, setType }) {
         setStart={setStart}
         type={type}
         setType={setType}
+        timers={timers}
+        setTimers={setTimers}
       />
       <PomodoroClock
         time={time}
@@ -149,20 +153,23 @@ const PomodoroActions = props => {
   );
 };
 
-const PomodoroTabs = ({ type, setType, ...props }) => {
-  const timers = {
-    pomodoro: 25,
-    shortBreak: 5,
-    longBreak: 10
-  };
+const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
+
+  React.useEffect(() => {
+    Settings.read().then(setTimers);
+  }, [setTimers]);
 
   const setTimerType = type => {
-    props.setTime(timers[type]);
+    setTime(timers[type]);
 
-    setType(type);
+    props.setType(type);
     props.setStart(0);
     props.setRunning(false);
   };
+
+  React.useEffect(() => {
+    setTime(timers[type]);
+  }, [timers, type, setTime]);
 
   return (
     <ButtonToolbar>
