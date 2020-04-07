@@ -51,8 +51,8 @@ const SettingsForm = props => {
     setSettings({ ...settings, [name]: value });
     if (!event.target.value) {
       setErrors({...errors, [name]: 'This field is required'});
-    } else if (value < 0) {
-      setErrors({...errors, [name]: 'Negative value are not allowed'});
+    } else if (value <= 0) {
+      setErrors({...errors, [name]: 'Only positive values are allowed'});
     } else if (Number.isNaN(value)) {
       setErrors({...errors, [name]: 'Non-integer values are not allowed'});
     } else {
