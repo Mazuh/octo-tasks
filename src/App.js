@@ -80,7 +80,7 @@ const AppHeader = ({ state }) => {
     <Navbar expand="lg" variant="dark">
       <Container>
         <SettingsModal setShow={setShow} show={show} />
-        <Navbar.Brand>My tasks app</Navbar.Brand>
+        <Navbar.Brand>Octo-tasks</Navbar.Brand>
         <Navbar.Text>
           {state.isLoading ? (
             <small> Loading...</small>
