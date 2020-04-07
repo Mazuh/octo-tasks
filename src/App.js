@@ -2,6 +2,7 @@ import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
 import SettingsModal from './SettingsModal';
+import { initialSettings } from './services/Settings';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
@@ -37,6 +38,7 @@ const tasksResource = makeReduxAssets({
 
 export default function App() {
   const [type, setType] = React.useState('pomodoro');
+  const [timers, setTimers] = React.useState(initialSettings);
   const [state, dispatch] = React.useReducer(
     tasksResource.reducer,
     tasksResource.initialState
@@ -55,9 +57,18 @@ export default function App() {
 
   return (
     <Wrapper type={type}>
-      <AppHeader state={mappedState} dispatch={dispatch} />
+      <AppHeader 
+        state={mappedState}
+        dispatch={dispatch}
+        setTimers={setTimers}
+      />
       <Container id="content" className="d-flex flex-column">
-        <Pomodoro type={type} setType={setType} />
+        <Pomodoro
+          type={type}
+          setType={setType}
+          timers={timers}
+          setTimers={setTimers}
+        />
         <TaskForm state={mappedState} dispatch={dispatch} />
         {!mappedState.isLoading && mappedState.tasks.length === 0 && (
           <Flash variant="light">No tasks yet.</Flash>
@@ -73,13 +84,17 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state }) => {
+const AppHeader = ({ state, setTimers }) => {
   const [show, setShow] = React.useState(false);
 
   return (
     <Navbar expand="lg" variant="dark">
       <Container>
-        <SettingsModal setShow={setShow} show={show} />
+        <SettingsModal
+          setShow={setShow}
+          show={show}
+          setTimers={setTimers}
+        />
         <Navbar.Brand>Octo-tasks</Navbar.Brand>
         <Navbar.Text>
           {state.isLoading ? (

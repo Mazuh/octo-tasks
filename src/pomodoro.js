@@ -11,7 +11,7 @@ const types = {
   longBreak: 'Long Break' 
 }
 
-export default function Pomodoro({ type, setType }) {
+export default function Pomodoro({ type, setType, timers, setTimers }) {
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
   const [time, setTime] = React.useState(25);
@@ -27,6 +27,8 @@ export default function Pomodoro({ type, setType }) {
         setStart={setStart}
         type={type}
         setType={setType}
+        timers={timers}
+        setTimers={setTimers}
       />
       <PomodoroClock
         time={time}
@@ -151,30 +153,23 @@ const PomodoroActions = props => {
   );
 };
 
-const initialTimers = {
-  pomodoro: 25,
-  shortBreak: 5,
-  longBreak: 10
-};
-
-const PomodoroTabs = ({ type, setType, ...props }) => {
-  const [timers, setTimers] = React.useState(initialTimers);
+const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
 
   React.useEffect(() => {
     Settings.read().then(setTimers);
   }, [setTimers]);
 
   const setTimerType = type => {
-    props.setTime(timers[type]);
+    setTime(timers[type]);
 
-    setType(type);
+    props.setType(type);
     props.setStart(0);
     props.setRunning(false);
   };
 
   React.useEffect(() => {
-    props.setTime(timers[type]);
-  }, [timers, type, props.setTime]);
+    setTime(timers[type]);
+  }, [timers, type, setTime]);
 
   return (
     <ButtonToolbar>

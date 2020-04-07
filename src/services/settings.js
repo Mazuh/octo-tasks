@@ -1,6 +1,6 @@
 const SETTINGS_KEY = 'octo-settings';
 
-const initialSettings = {
+export const initialSettings = {
   pomodoro: 25,
   shortBreak: 5,
   longBreak: 10,

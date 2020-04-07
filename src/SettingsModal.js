@@ -13,7 +13,7 @@ export default function SettingsModal(props) {
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <SettingsForm/>
+        <SettingsForm setTimers={props.setTimers}/>
       </Modal.Body>
     </Modal>
   );
@@ -25,7 +25,7 @@ const initialErrors = {
   longBreak: ''
 };
 
-const SettingsForm = props => {
+const SettingsForm = ({setTimers, ...props}) => {
   const [settings, setSettings] = React.useState(null);
   const [errors, setErrors] = React.useState(initialErrors);
 
@@ -40,7 +40,8 @@ const SettingsForm = props => {
     }
 
     Settings.update(settings);
-  }, [settings, errors]);
+    setTimers(settings);
+  }, [setTimers, settings, errors]);
 
   React.useEffect(() => {
     Settings.read().then(setSettings);
