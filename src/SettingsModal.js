@@ -34,9 +34,6 @@ const SettingsForm = props => {
       return;
     }
 
-    // TODO: other validations: negative values, non-integers, too big, etc.
-    // and raise toasts instead of saving.
-    // (or, a bigger challenge: place a red border for error on the bad input.)
     const hasError = Object.keys(errors).some(name => errors[name]);
     if (hasError) {
       return;
@@ -48,15 +45,6 @@ const SettingsForm = props => {
   React.useEffect(() => {
     Settings.read().then(setSettings);
   }, [setSettings]);
-
-  // TODO: create onChange function factory (ie., a function that creates another closure function). =) 
-  // hint, the final result should be, on the props:
-  // ...
-  // onChange={onChangeFn('pomodoro')}
-  // ...
-  // onChange={onChangeFn('shortBreak')}
-  // ...
-  // onChange={onChangeFn('longBreak')}
 
   const onTimeChangeFn = name => event => {
     const value = parseInt(event.target.value, 10);
