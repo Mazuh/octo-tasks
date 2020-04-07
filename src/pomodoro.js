@@ -2,6 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Push from 'push.js';
+import { Howl, Howler } from 'howler';
 
 import Settings from './services/Settings';
 
@@ -10,6 +11,9 @@ const types = {
   shortBreak: 'Short Break',
   longBreak: 'Long Break' 
 }
+const Sound = new Howl({
+  src: ["/ring.mp3"]
+})
 
 export default function Pomodoro({ type, setType, timers, setTimers }) {
   const [isRunning, setRunning] = React.useState(false);
@@ -68,6 +72,7 @@ const PomodoroClock = props => {
       if (nextRemainingSeconds >= 0) {
         setRemainingSeconds(nextRemainingSeconds);
       } else {
+        Sound.play();
         Push.create("Octo-tasks", {
           body: `${types[props.type]} is over!`,
           tag: 'done',
