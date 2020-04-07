@@ -3,7 +3,6 @@ import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
-import Button from 'react-bootstrap/Button';
 import get from 'lodash.get';
 import Settings from './services/Settings';
 
@@ -22,6 +21,7 @@ export default function SettingsModal(props) {
 
 const SettingsForm = props => {
   const [settings, setSettings] = React.useState(null);
+  const [error, setError] = React.useState('');
 
   React.useEffect(() => {
     if (settings === null) {
@@ -31,9 +31,12 @@ const SettingsForm = props => {
     // TODO: other validations: negative values, non-integers, too big, etc.
     // and raise toasts instead of saving.
     // (or, a bigger challenge: place a red border for error on the bad input.)
+    if (error) {
+      return;
+    }
 
     Settings.update(settings);
-  }, [settings]);
+  }, [settings, error]);
 
   React.useEffect(() => {
     Settings.read().then(setSettings);
@@ -48,6 +51,16 @@ const SettingsForm = props => {
   // ...
   // onChange={onChangeFn('longBreak')}
 
+  const onTimeChangeFn = name => event => {
+    const value = parseInt(event.target.value, 10);
+    setSettings({ ...settings, [name]: value });
+    if (value < 0) {
+      setError('Negative are not allowed');
+    } else {
+      setError('');
+    }
+  };
+
   return (
     <Container>
       <Form className="p-3 mb-4" onSubmit={e => e.preventDefault()}>
@@ -55,15 +68,15 @@ const SettingsForm = props => {
           <Row>
             <Form.Label>Promodoro</Form.Label>
             <Form.Control
-              id="promodoro"
+              id="pomodoro"
               type="number"
               className="w-100"
-              placeholder="promodoro"
+              placeholder="pomodoro"
               autoComplete="off"
               value={get(settings, 'pomodoro', '')}
-              onChange={event => setSettings({ ...settings, pomodoro: event.target.value })}
-              required
+              onChange={onTimeChangeFn('pomodoro')}
             />
+            <span>{error}</span>
           </Row>
         </Form.Group>
         <Form.Group>
@@ -77,7 +90,6 @@ const SettingsForm = props => {
               autoComplete="off"
               value={get(settings, 'shortBreak', '')}
               onChange={event => setSettings({ ...settings, shortBreak: event.target.value })}
-              required
             />
           </Row>
         </Form.Group>
@@ -92,7 +104,6 @@ const SettingsForm = props => {
               autoComplete="off"
               value={get(settings, 'longBreak', '')}
               onChange={event => setSettings({ ...settings, longBreak: event.target.value })}
-              required
             />
           </Row>
         </Form.Group>
