@@ -3,6 +3,8 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Push from 'push.js';
 
+import Settings from './services/Settings';
+
 const types = {
   pomodoro: 'Pomodoro',
   shortBreak: 'Short Break',
@@ -149,12 +151,18 @@ const PomodoroActions = props => {
   );
 };
 
+const initialTimers = {
+  pomodoro: 25,
+  shortBreak: 5,
+  longBreak: 10
+};
+
 const PomodoroTabs = ({ type, setType, ...props }) => {
-  const timers = {
-    pomodoro: 25,
-    shortBreak: 5,
-    longBreak: 10
-  };
+  const [timers, setTimers] = React.useState(initialTimers);
+
+  React.useEffect(() => {
+    Settings.read().then(setTimers);
+  }, [setTimers]);
 
   const setTimerType = type => {
     props.setTime(timers[type]);
@@ -163,6 +171,10 @@ const PomodoroTabs = ({ type, setType, ...props }) => {
     props.setStart(0);
     props.setRunning(false);
   };
+
+  React.useEffect(() => {
+    props.setTime(timers[type]);
+  }, [timers, type, props.setTime]);
 
   return (
     <ButtonToolbar>
