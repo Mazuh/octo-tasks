@@ -61,8 +61,12 @@ const SettingsForm = props => {
   const onTimeChangeFn = name => event => {
     const value = parseInt(event.target.value, 10);
     setSettings({ ...settings, [name]: value });
-    if (value < 0) {
-      setErrors({...errors, [name]: 'Negative are not allowed'});
+    if (!event.target.value) {
+      setErrors({...errors, [name]: 'This field is required'});
+    } else if (value < 0) {
+      setErrors({...errors, [name]: 'Negative value are not allowed'});
+    } else if (Number.isNaN(value)) {
+      setErrors({...errors, [name]: 'Non-integer values are not allowed'});
     } else {
       setErrors({...errors, [name]: ''});
     }
