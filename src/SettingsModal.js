@@ -19,9 +19,15 @@ export default function SettingsModal(props) {
   );
 }
 
+const initialErrors = {
+  pomodoro: '',
+  shortBreak: '',
+  longBreak: ''
+};
+
 const SettingsForm = props => {
   const [settings, setSettings] = React.useState(null);
-  const [error, setError] = React.useState('');
+  const [errors, setErrors] = React.useState(initialErrors);
 
   React.useEffect(() => {
     if (settings === null) {
@@ -31,12 +37,13 @@ const SettingsForm = props => {
     // TODO: other validations: negative values, non-integers, too big, etc.
     // and raise toasts instead of saving.
     // (or, a bigger challenge: place a red border for error on the bad input.)
-    if (error) {
+    const hasError = Object.keys(errors).some(name => errors[name]);
+    if (hasError) {
       return;
     }
 
     Settings.update(settings);
-  }, [settings, error]);
+  }, [settings, errors]);
 
   React.useEffect(() => {
     Settings.read().then(setSettings);
@@ -55,9 +62,9 @@ const SettingsForm = props => {
     const value = parseInt(event.target.value, 10);
     setSettings({ ...settings, [name]: value });
     if (value < 0) {
-      setError('Negative are not allowed');
+      setErrors({...errors, [name]: 'Negative are not allowed'});
     } else {
-      setError('');
+      setErrors({...errors, [name]: ''});
     }
   };
 
@@ -76,7 +83,7 @@ const SettingsForm = props => {
               value={get(settings, 'pomodoro', '')}
               onChange={onTimeChangeFn('pomodoro')}
             />
-            <span>{error}</span>
+            <span className="text-danger">{errors.pomodoro}</span>
           </Row>
         </Form.Group>
         <Form.Group>
@@ -89,8 +96,9 @@ const SettingsForm = props => {
               placeholder="short break"
               autoComplete="off"
               value={get(settings, 'shortBreak', '')}
-              onChange={event => setSettings({ ...settings, shortBreak: event.target.value })}
+              onChange={onTimeChangeFn('shortBreak')}
             />
+            <span className="text-danger">{errors.shortBreak}</span>
           </Row>
         </Form.Group>
         <Form.Group>
@@ -103,8 +111,9 @@ const SettingsForm = props => {
               placeholder="long break"
               autoComplete="off"
               value={get(settings, 'longBreak', '')}
-              onChange={event => setSettings({ ...settings, longBreak: event.target.value })}
+              onChange={onTimeChangeFn('longBreak')}
             />
+            <span className="text-danger">{errors.longBreak}</span>
           </Row>
         </Form.Group>
       </Form>
