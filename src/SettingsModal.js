@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import get from 'lodash.get';
-import Settings from './services/Settings';
+import Settings from './services/settings';
 
 export default function SettingsModal(props) {
   return (

@@ -4,7 +4,7 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Push from 'push.js';
 import { Howl } from 'howler';
 
-import Settings from './services/Settings';
+import Settings from './services/settings';
 
 const types = {
   pomodoro: 'Pomodoro',
