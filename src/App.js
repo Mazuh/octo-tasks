@@ -39,7 +39,7 @@ const tasksResource = makeReduxAssets({
 
 export default function App() {
   const [type, setType] = React.useState('pomodoro');
-  const [timers, setTimers] = React.useState(initialSettings);
+  const [config, setConfig] = React.useState(initialSettings);
   const [state, dispatch] = React.useReducer(
     tasksResource.reducer,
     tasksResource.initialState
@@ -61,15 +61,15 @@ export default function App() {
       <AppHeader 
         state={mappedState}
         dispatch={dispatch}
-        setTimers={setTimers}
+        setConfig={setConfig}
         setType={setType}
       />
       <Container id="content" className="d-flex flex-column">
         <Pomodoro
           type={type}
           setType={setType}
-          timers={timers}
-          setTimers={setTimers}
+          config={config}
+          setConfig={setConfig}
         />
         <TaskForm state={mappedState} dispatch={dispatch} />
         {!mappedState.isLoading && mappedState.tasks.length === 0 && (
@@ -86,7 +86,7 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state, setType, setTimers }) => {
+const AppHeader = ({ state, setType, setConfig }) => {
   const [show, setShow] = React.useState(false);
 
   return (
@@ -95,7 +95,7 @@ const AppHeader = ({ state, setType, setTimers }) => {
         <SettingsModal
             setShow={setShow}
             show={show}
-            setTimers={setTimers}
+            setConfig={setConfig}
         />
         <Navbar.Brand>Octo-tasks</Navbar.Brand>
           <Navbar.Text>

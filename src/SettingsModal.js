@@ -13,7 +13,7 @@ export default function SettingsModal(props) {
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <SettingsForm setTimers={props.setTimers}/>
+        <SettingsForm setConfig={props.setConfig}/>
       </Modal.Body>
     </Modal>
   );
@@ -25,7 +25,7 @@ const initialErrors = {
   longBreak: ''
 };
 
-const SettingsForm = ({setTimers, ...props}) => {
+const SettingsForm = ({ setConfig, ...props }) => {
   const [settings, setSettings] = React.useState(null);
   const [errors, setErrors] = React.useState(initialErrors);
 
@@ -40,24 +40,29 @@ const SettingsForm = ({setTimers, ...props}) => {
     }
 
     Settings.update(settings);
-    setTimers(settings);
-  }, [setTimers, settings, errors]);
+    setConfig(settings);
+  }, [setConfig, settings, errors]);
 
   React.useEffect(() => {
     Settings.read().then(setSettings);
   }, [setSettings]);
 
   const onTimeChangeFn = name => event => {
-    const value = parseInt(event.target.value, 10);
-    setSettings({ ...settings, [name]: value });
-    if (!event.target.value) {
-      setErrors({...errors, [name]: 'This field is required'});
-    } else if (value <= 0) {
-      setErrors({...errors, [name]: 'Only positive values are allowed'});
-    } else if (Number.isNaN(value)) {
-      setErrors({...errors, [name]: 'Non-integer values are not allowed'});
+    if (name === 'sound') {
+      console.log(name, event.target.value)
+      setSettings({ ...settings, [name]: event.target.value });
     } else {
-      setErrors({...errors, [name]: ''});
+      const value = parseInt(event.target.value, 10);
+      setSettings({ ...settings, [name]: value });
+      if (!event.target.value) {
+        setErrors({...errors, [name]: 'This field is required'});
+      } else if (value <= 0) {
+        setErrors({...errors, [name]: 'Only positive values are allowed'});
+      } else if (Number.isNaN(value)) {
+        setErrors({...errors, [name]: 'Non-integer values are not allowed'});
+      } else {
+        setErrors({...errors, [name]: ''});
+      }
     }
   };
 
@@ -107,6 +112,22 @@ const SettingsForm = ({setTimers, ...props}) => {
               onChange={onTimeChangeFn('longBreak')}
             />
             <span className="text-danger">{errors.longBreak}</span>
+          </Row>
+        </Form.Group>
+        <Form.Group>
+          <Row>
+            <Form.Label>Example select</Form.Label>
+            <Form.Control
+              as="select"
+              value={get(settings, 'sound', '/ring.mp3')}
+              onChange={onTimeChangeFn('sound')}
+            >
+              <option value={'/ring.mp3'}>Sound 1</option>
+              <option value={'/notification_bell.mp3'}>Sound 2</option>
+              <option value='/notification.mp3'>Sound 3</option>
+              <option value='/notification_sound.mp3'>Sound 4</option>
+              <option value='/notification_sound_1.mp3'>Sound 5</option>
+            </Form.Control>
           </Row>
         </Form.Group>
       </Form>

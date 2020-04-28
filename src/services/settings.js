@@ -4,6 +4,7 @@ export const initialSettings = {
   pomodoro: 25,
   shortBreak: 5,
   longBreak: 10,
+  sound: '/ring.mp3'
 }
 
 const retrieveSettings = async () => {

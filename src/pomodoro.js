@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Push from 'push.js';
-import { Howl} from 'howler';
+import { Howl } from 'howler';
 
 import Settings from './services/Settings';
 
@@ -11,11 +11,8 @@ const types = {
   shortBreak: 'Short Break',
   longBreak: 'Long Break' 
 }
-const Sound = new Howl({
-  src: ["/ring.mp3"]
-})
 
-export default function Pomodoro({ type, setType, timers, setTimers }) {
+export default function Pomodoro({ type, setType, config, setConfig }) {
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
   const [time, setTime] = React.useState(25);
@@ -31,8 +28,8 @@ export default function Pomodoro({ type, setType, timers, setTimers }) {
         setStart={setStart}
         type={type}
         setType={setType}
-        timers={timers}
-        setTimers={setTimers}
+        config={config}
+        setConfig={setConfig}
       />
       <PomodoroClock
         time={time}
@@ -41,6 +38,7 @@ export default function Pomodoro({ type, setType, timers, setTimers }) {
         setRunning={setRunning}
         start={start}
         type={type}
+        config={config}
         setStart={setStart}
       />
       <PomodoroActions
@@ -53,8 +51,11 @@ export default function Pomodoro({ type, setType, timers, setTimers }) {
   );
 }
 
-const PomodoroClock = props => {
+const PomodoroClock = ({ config, ...props }) => {
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
+  const Sound = new Howl({
+    src: config.sound
+  })
 
   React.useEffect(() => {
     if (props.start === 0) {
@@ -87,7 +88,7 @@ const PomodoroClock = props => {
     }, 200);
 
     return () => clearTimeout(countdown);
-  }, [props, remainingSeconds]);
+  }, [props, remainingSeconds, Sound]);
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
@@ -158,14 +159,14 @@ const PomodoroActions = props => {
   );
 };
 
-const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
+const PomodoroTabs = ({ type, setTime, config, setConfig, ...props }) => {
 
   React.useEffect(() => {
-    Settings.read().then(setTimers);
-  }, [setTimers]);
+    Settings.read().then(setConfig);
+  }, [setConfig]);
 
   const setTimerType = type => {
-    setTime(timers[type]);
+    setTime(config[type]);
 
     props.setType(type);
     props.setStart(0);
@@ -173,8 +174,8 @@ const PomodoroTabs = ({ type, setTime, timers, setTimers, ...props }) => {
   };
 
   React.useEffect(() => {
-    setTime(timers[type]);
-  }, [timers, type, setTime]);
+    setTime(config[type]);
+  }, [config, type, setTime]);
 
   return (
     <ButtonToolbar className="d-none d-md-flex justify-content-around">
