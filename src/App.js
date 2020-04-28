@@ -3,6 +3,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
 import SettingsModal from './SettingsModal';
 import { initialSettings } from './services/Settings';
+import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
@@ -61,6 +62,7 @@ export default function App() {
         state={mappedState}
         dispatch={dispatch}
         setTimers={setTimers}
+        setType={setType}
       />
       <Container id="content" className="d-flex flex-column">
         <Pomodoro
@@ -84,32 +86,40 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state, setTimers }) => {
+const AppHeader = ({ state, setType, setTimers }) => {
   const [show, setShow] = React.useState(false);
 
   return (
     <Navbar expand="lg" variant="dark">
       <Container>
         <SettingsModal
-          setShow={setShow}
-          show={show}
-          setTimers={setTimers}
+            setShow={setShow}
+            show={show}
+            setTimers={setTimers}
         />
         <Navbar.Brand>Octo-tasks</Navbar.Brand>
-        <Navbar.Text>
-          {state.isLoading ? (
-            <small> Loading...</small>
-            ) : (
-            <Button variant="primary" onClick={() => setShow(true)}>
-              Settings
-            </Button>
-            )
-          }
-        </Navbar.Text>
+          <Navbar.Text>
+            {state.isLoading ? (
+              <small> Loading...</small>
+              ) : (
+              <Button variant="primary" onClick={() => setShow(true)}>
+                Settings
+              </Button>
+              )
+            }
+          </Navbar.Text>
+        <Navbar.Toggle className="d-md-none d-sm-fle" aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="d-md-none d-sm-flex mr-auto ">
+            <Nav.Link onClick={() => setType('pomodoro')} href="#pomodoro">Pomodoro</Nav.Link>
+            <Nav.Link onClick={() => setType('shortBreak')} href="#shorbreak">Short Break</Nav.Link>
+            <Nav.Link onClick={() => setType('longBreak')} href="#longbreak">Long Break</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
-};
+}
 
 const TaskForm = props => {
   const [description, setDescription] = React.useState('');
@@ -182,7 +192,10 @@ const TasksList = ({ dispatch, ...props }) => {
 
   const onClickDelFn = task => () => {
     tasksResource.actions
-      .delete(task.uuid, task)(dispatch)
+      .delete(
+        task.uuid,
+        task
+      )(dispatch)
       .then(() => {
         toast('Task deleted!');
       });
