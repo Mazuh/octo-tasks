@@ -2,7 +2,7 @@ import React from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Push from 'push.js';
-import { Howl, Howler } from 'howler';
+import { Howl} from 'howler';
 
 import Settings from './services/Settings';
 
