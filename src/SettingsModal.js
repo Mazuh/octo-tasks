@@ -124,9 +124,9 @@ const SettingsForm = ({ setConfig, ...props }) => {
               <option value={'/assets/notifications-sounds/service-bell_daniel_simion.mp3'}>Service Bell Help by Daniel Simion</option>
               <option value={'/assets/notifications-sounds/analog-watch-alarm_daniel-simion.mp3'}>Analog Watch Alarm by Daniel Simion</option>
               <option value={'/assets/notifications-sounds/Blop-Mark_DiAngelo-79054334.mp3'}>Blop by Mark DiAngelo</option>
-              <option value={'/assets/notifications-sounds/clock-chimes-daniel_simion.mp3'}>Clock Chimes 4x Sound by Daniel Simion</option>
-              <option value={'/assets/notifications-sounds/sms-alert-1-daniel_simion.mp3'}>Text Message Alert 1 by Daniel Simion</option>
-              <option value={'/assets/notifications-sounds/sms-alert-5-daniel_simion.mp3'}>Text Message Alert 5 by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/clock-chimes-daniel_simon.mp3'}>Clock Chimes 4x Sound by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/sms-alert-1-daniel_simon.mp3'}>Text Message Alert 1 by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/sms-alert-5-daniel_simon.mp3'}>Text Message Alert 5 by Daniel Simion</option>
             </Form.Control>
           </Row>
         </Form.Group>
