@@ -49,7 +49,6 @@ const SettingsForm = ({ setConfig, ...props }) => {
 
   const onTimeChangeFn = name => event => {
     if (name === 'sound') {
-      console.log(name, event.target.value)
       setSettings({ ...settings, [name]: event.target.value });
     } else {
       const value = parseInt(event.target.value, 10);
@@ -119,14 +118,15 @@ const SettingsForm = ({ setConfig, ...props }) => {
             <Form.Label>Example select</Form.Label>
             <Form.Control
               as="select"
-              value={get(settings, 'sound', '/ring.mp3')}
+              value={get(settings, 'sound', '/assets/notifications-sounds/service-bell_daniel_simion.mp3')}
               onChange={onTimeChangeFn('sound')}
             >
-              <option value={'/ring.mp3'}>Sound 1</option>
-              <option value={'/notification_bell.mp3'}>Sound 2</option>
-              <option value='/notification.mp3'>Sound 3</option>
-              <option value='/notification_sound.mp3'>Sound 4</option>
-              <option value='/notification_sound_1.mp3'>Sound 5</option>
+              <option value={'/assets/notifications-sounds/service-bell_daniel_simion.mp3'}>Service Bell Help by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/analog-watch-alarm_daniel-simion.mp3'}>Analog Watch Alarm by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/Blop-Mark_DiAngelo-79054334.mp3'}>Blop by Mark DiAngelo</option>
+              <option value={'/assets/notifications-sounds/clock-chimes-daniel_simion.mp3'}>Clock Chimes 4x Sound by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/sms-alert-1-daniel_simion.mp3'}>Text Message Alert 1 by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/sms-alert-5-daniel_simion.mp3'}>Text Message Alert 5 by Daniel Simion</option>
             </Form.Control>
           </Row>
         </Form.Group>

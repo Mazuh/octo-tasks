@@ -53,9 +53,6 @@ export default function Pomodoro({ type, setType, config, setConfig }) {
 
 const PomodoroClock = ({ config, ...props }) => {
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
-  const Sound = new Howl({
-    src: config.sound
-  })
 
   React.useEffect(() => {
     if (props.start === 0) {
@@ -70,10 +67,13 @@ const PomodoroClock = ({ config, ...props }) => {
     const countdown = setTimeout(() => {
       const end = props.start + props.time * 60 * 1000;
       const nextRemainingSeconds = (end - Date.now() + 1) / 1000;
+      const sound = new Howl({
+        src: config.sound
+      })
       if (nextRemainingSeconds >= 0) {
         setRemainingSeconds(nextRemainingSeconds);
       } else {
-        Sound.play();
+        sound.play();
         Push.create("Octo-tasks", {
           body: `${types[props.type]} is over!`,
           tag: 'done',
@@ -88,7 +88,7 @@ const PomodoroClock = ({ config, ...props }) => {
     }, 200);
 
     return () => clearTimeout(countdown);
-  }, [props, remainingSeconds, Sound]);
+  }, [props, remainingSeconds, config.sound]);
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
