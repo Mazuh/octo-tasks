@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import get from 'lodash.get';
-import Settings from './services/Settings';
+import Settings from './services/settings';
 
 export default function SettingsModal(props) {
   return (
@@ -13,7 +13,7 @@ export default function SettingsModal(props) {
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <SettingsForm setTimers={props.setTimers}/>
+        <SettingsForm setConfig={props.setConfig}/>
       </Modal.Body>
     </Modal>
   );
@@ -25,7 +25,7 @@ const initialErrors = {
   longBreak: ''
 };
 
-const SettingsForm = ({setTimers, ...props}) => {
+const SettingsForm = ({ setConfig, ...props }) => {
   const [settings, setSettings] = React.useState(null);
   const [errors, setErrors] = React.useState(initialErrors);
 
@@ -40,24 +40,28 @@ const SettingsForm = ({setTimers, ...props}) => {
     }
 
     Settings.update(settings);
-    setTimers(settings);
-  }, [setTimers, settings, errors]);
+    setConfig(settings);
+  }, [setConfig, settings, errors]);
 
   React.useEffect(() => {
     Settings.read().then(setSettings);
   }, [setSettings]);
 
   const onTimeChangeFn = name => event => {
-    const value = parseInt(event.target.value, 10);
-    setSettings({ ...settings, [name]: value });
-    if (!event.target.value) {
-      setErrors({...errors, [name]: 'This field is required'});
-    } else if (value <= 0) {
-      setErrors({...errors, [name]: 'Only positive values are allowed'});
-    } else if (Number.isNaN(value)) {
-      setErrors({...errors, [name]: 'Non-integer values are not allowed'});
+    if (name === 'sound') {
+      setSettings({ ...settings, [name]: event.target.value });
     } else {
-      setErrors({...errors, [name]: ''});
+      const value = parseInt(event.target.value, 10);
+      setSettings({ ...settings, [name]: value });
+      if (!event.target.value) {
+        setErrors({...errors, [name]: 'This field is required'});
+      } else if (value <= 0) {
+        setErrors({...errors, [name]: 'Only positive values are allowed'});
+      } else if (Number.isNaN(value)) {
+        setErrors({...errors, [name]: 'Non-integer values are not allowed'});
+      } else {
+        setErrors({...errors, [name]: ''});
+      }
     }
   };
 
@@ -107,6 +111,23 @@ const SettingsForm = ({setTimers, ...props}) => {
               onChange={onTimeChangeFn('longBreak')}
             />
             <span className="text-danger">{errors.longBreak}</span>
+          </Row>
+        </Form.Group>
+        <Form.Group>
+          <Row>
+            <Form.Label>Example select</Form.Label>
+            <Form.Control
+              as="select"
+              value={get(settings, 'sound', '/assets/notifications-sounds/service-bell_daniel_simion.mp3')}
+              onChange={onTimeChangeFn('sound')}
+            >
+              <option value={'/assets/notifications-sounds/service-bell_daniel_simion.mp3'}>Service Bell Help by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/analog-watch-alarm_daniel-simion.mp3'}>Analog Watch Alarm by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/Blop-Mark_DiAngelo-79054334.mp3'}>Blop by Mark DiAngelo</option>
+              <option value={'/assets/notifications-sounds/clock-chimes-daniel_simion.mp3'}>Clock Chimes 4x Sound by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/sms-alert-1-daniel_simion.mp3'}>Text Message Alert 1 by Daniel Simion</option>
+              <option value={'/assets/notifications-sounds/sms-alert-5-daniel_simion.mp3'}>Text Message Alert 5 by Daniel Simion</option>
+            </Form.Control>
           </Row>
         </Form.Group>
       </Form>

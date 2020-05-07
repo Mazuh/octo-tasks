@@ -4,6 +4,7 @@ export const initialSettings = {
   pomodoro: 25,
   shortBreak: 5,
   longBreak: 10,
+  sound: '/assets/notifications-sounds/service-bell_daniel_simion.mp3'
 }
 
 const retrieveSettings = async () => {
