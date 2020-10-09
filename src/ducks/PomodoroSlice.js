@@ -1,9 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initialSettings } from '../services/settings';
 
 const initialState = {
-  type: 'pomodoro',
-  cofig: initialSettings
+  type: 'pomodoro'
 };
 
 const pomodoroSlice = createSlice({
