@@ -6,7 +6,12 @@ import { Howl } from 'howler';
 
 import Settings from './services/settings';
 import { useDispatch, useSelector } from 'react-redux';
-import { setType, setTime, setRunning } from './ducks/PomodoroSlice';
+import {
+  setType,
+  setTime,
+  setRunning,
+  setStart
+} from './ducks/PomodoroSlice';
 
 const types = {
   pomodoro: 'Pomodoro',
@@ -17,7 +22,7 @@ const types = {
 export default function Pomodoro({ type, config, setConfig }) {
   const time = useSelector(state => state.pomodoro.time);
   const isRunning = useSelector(state => state.pomodoro.isRunning);
-  const [start, setStart] = React.useState(0);
+  const start = useSelector(state => state.pomodoro.start);
 
   return (
     <div className="pomorodo__wrapper d-flex flex-column p-3 mt-4 rounded mb-4">
@@ -25,7 +30,6 @@ export default function Pomodoro({ type, config, setConfig }) {
         time={time}
         isRunning={isRunning}
         start={start}
-        setStart={setStart}
         type={type}
         config={config}
         setConfig={setConfig}
@@ -36,12 +40,10 @@ export default function Pomodoro({ type, config, setConfig }) {
         start={start}
         type={type}
         config={config}
-        setStart={setStart}
       />
       <PomodoroActions
         isRunning={isRunning}
         start={start}
-        setStart={setStart}
       />
     </div>
   );
@@ -107,9 +109,9 @@ const PomodoroActions = props => {
 
   const start = () => {
     if (props.start === 0) {
-      props.setStart(Date.now());
+      dispatch(setStart(Date.now()));
     } else {
-      props.setStart(props.start + Date.now() - currentPause);
+      dispatch(setStart(props.start + Date.now() - currentPause));
     }
     dispatch(setRunning(true));
   };
@@ -120,7 +122,7 @@ const PomodoroActions = props => {
   };
 
   const reset = () => {
-    props.setStart(0);
+    dispatch(setStart(0));
     dispatch(setRunning(false));
   };
 
@@ -167,7 +169,7 @@ const PomodoroTabs = ({ type, config, setConfig, ...props }) => {
     setTime(config[type]);
 
     dispatch(setType(type));
-    props.setStart(0);
+    dispatch(setStart(0));
     dispatch(setRunning(false));
   };
 
