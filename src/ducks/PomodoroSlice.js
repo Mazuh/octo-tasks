@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  type: 'pomodoro'
+  type: 'pomodoro',
+  time: 25
 };
 
 const pomodoroSlice = createSlice({
@@ -10,10 +11,13 @@ const pomodoroSlice = createSlice({
   reducers: {
     setType: (state, action) => {
       state.type = action.payload;
+    },
+    setTime: (state, action) => {
+      state.time = action.payload;
     }
   }
 });
 
-export const { setType } = pomodoroSlice.actions;
+export const { setType, setTime } = pomodoroSlice.actions;
 
 export default pomodoroSlice.reducer;

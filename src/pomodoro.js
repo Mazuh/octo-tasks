@@ -5,8 +5,8 @@ import Push from 'push.js';
 import { Howl } from 'howler';
 
 import Settings from './services/settings';
-import { useDispatch } from 'react-redux';
-import { setType } from './ducks/PomodoroSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setType, setTime } from './ducks/PomodoroSlice';
 
 const types = {
   pomodoro: 'Pomodoro',
@@ -15,15 +15,14 @@ const types = {
 }
 
 export default function Pomodoro({ type, config, setConfig }) {
+  const time = useSelector(state => state.pomodoro.time);
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
-  const [time, setTime] = React.useState(25);
 
   return (
     <div className="pomorodo__wrapper d-flex flex-column p-3 mt-4 rounded mb-4">
       <PomodoroTabs
         time={time}
-        setTime={setTime}
         isRunning={isRunning}
         setRunning={setRunning}
         start={start}
@@ -34,7 +33,6 @@ export default function Pomodoro({ type, config, setConfig }) {
       />
       <PomodoroClock
         time={time}
-        setTime={setTime}
         isRunning={isRunning}
         setRunning={setRunning}
         start={start}
@@ -160,7 +158,7 @@ const PomodoroActions = props => {
   );
 };
 
-const PomodoroTabs = ({ type, setTime, config, setConfig, ...props }) => {
+const PomodoroTabs = ({ type, config, setConfig, ...props }) => {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
@@ -176,8 +174,8 @@ const PomodoroTabs = ({ type, setTime, config, setConfig, ...props }) => {
   };
 
   React.useEffect(() => {
-    setTime(config[type]);
-  }, [config, type, setTime]);
+    dispatch(setTime(config[type]));
+  }, [config, type, dispatch]);
 
   return (
     <ButtonToolbar className="d-none d-md-flex justify-content-around">
