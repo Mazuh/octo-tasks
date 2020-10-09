@@ -6,7 +6,7 @@ import { Howl } from 'howler';
 
 import Settings from './services/settings';
 import { useDispatch, useSelector } from 'react-redux';
-import { setType, setTime } from './ducks/PomodoroSlice';
+import { setType, setTime, setRunning } from './ducks/PomodoroSlice';
 
 const types = {
   pomodoro: 'Pomodoro',
@@ -16,7 +16,7 @@ const types = {
 
 export default function Pomodoro({ type, config, setConfig }) {
   const time = useSelector(state => state.pomodoro.time);
-  const [isRunning, setRunning] = React.useState(false);
+  const isRunning = useSelector(state => state.pomodoro.isRunning);
   const [start, setStart] = React.useState(0);
 
   return (
@@ -24,7 +24,6 @@ export default function Pomodoro({ type, config, setConfig }) {
       <PomodoroTabs
         time={time}
         isRunning={isRunning}
-        setRunning={setRunning}
         start={start}
         setStart={setStart}
         type={type}
@@ -34,7 +33,6 @@ export default function Pomodoro({ type, config, setConfig }) {
       <PomodoroClock
         time={time}
         isRunning={isRunning}
-        setRunning={setRunning}
         start={start}
         type={type}
         config={config}
@@ -42,7 +40,6 @@ export default function Pomodoro({ type, config, setConfig }) {
       />
       <PomodoroActions
         isRunning={isRunning}
-        setRunning={setRunning}
         start={start}
         setStart={setStart}
       />
@@ -106,6 +103,7 @@ const PomodoroClock = ({ config, ...props }) => {
 
 const PomodoroActions = props => {
   const [currentPause, setCurrentPause] = React.useState(0);
+  const dispatch = useDispatch();
 
   const start = () => {
     if (props.start === 0) {
@@ -113,17 +111,17 @@ const PomodoroActions = props => {
     } else {
       props.setStart(props.start + Date.now() - currentPause);
     }
-    props.setRunning(true);
+    dispatch(setRunning(true));
   };
 
   const pause = () => {
-    props.setRunning(false);
+    dispatch(setRunning(false));
     setCurrentPause(Date.now());
   };
 
   const reset = () => {
     props.setStart(0);
-    props.setRunning(false);
+    dispatch(setRunning(false));
   };
 
   return (
@@ -170,7 +168,7 @@ const PomodoroTabs = ({ type, config, setConfig, ...props }) => {
 
     dispatch(setType(type));
     props.setStart(0);
-    props.setRunning(false);
+    dispatch(setRunning(false));
   };
 
   React.useEffect(() => {
