@@ -5,6 +5,8 @@ import Push from 'push.js';
 import { Howl } from 'howler';
 
 import Settings from './services/settings';
+import { useDispatch } from 'react-redux';
+import { setType } from './ducks/PomodoroSlice';
 
 const types = {
   pomodoro: 'Pomodoro',
@@ -12,7 +14,7 @@ const types = {
   longBreak: 'Long Break' 
 }
 
-export default function Pomodoro({ type, setType, config, setConfig }) {
+export default function Pomodoro({ type, config, setConfig }) {
   const [isRunning, setRunning] = React.useState(false);
   const [start, setStart] = React.useState(0);
   const [time, setTime] = React.useState(25);
@@ -27,7 +29,6 @@ export default function Pomodoro({ type, setType, config, setConfig }) {
         start={start}
         setStart={setStart}
         type={type}
-        setType={setType}
         config={config}
         setConfig={setConfig}
       />
@@ -160,6 +161,7 @@ const PomodoroActions = props => {
 };
 
 const PomodoroTabs = ({ type, setTime, config, setConfig, ...props }) => {
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     Settings.read().then(setConfig);
@@ -168,7 +170,7 @@ const PomodoroTabs = ({ type, setTime, config, setConfig, ...props }) => {
   const setTimerType = type => {
     setTime(config[type]);
 
-    props.setType(type);
+    dispatch(setType(type));
     props.setStart(0);
     props.setRunning(false);
   };

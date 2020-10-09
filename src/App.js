@@ -13,7 +13,8 @@ import { makeReduxAssets } from 'resource-toolkit';
 import Alert from 'react-bootstrap/Alert';
 import ToDo from './services/ToDo';
 import Pomodoro from './pomodoro.js';
-
+import { useSelector } from 'react-redux';
+import { setType } from './ducks/PomodoroSlice';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -38,7 +39,7 @@ const tasksResource = makeReduxAssets({
 });
 
 export default function App() {
-  const [type, setType] = React.useState('pomodoro');
+  const type = useSelector(state => state.pomodoro.type);
   const [config, setConfig] = React.useState(initialSettings);
   const [state, dispatch] = React.useReducer(
     tasksResource.reducer,
@@ -55,7 +56,6 @@ export default function App() {
     }
   }, [state.error]);
 
-
   return (
     <Wrapper type={type}>
       <AppHeader 
@@ -67,7 +67,6 @@ export default function App() {
       <Container id="content" className="d-flex flex-column">
         <Pomodoro
           type={type}
-          setType={setType}
           config={config}
           setConfig={setConfig}
         />
@@ -86,7 +85,7 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state, setType, setConfig }) => {
+const AppHeader = ({ state, setConfig }) => {
   const [show, setShow] = React.useState(false);
 
   return (
