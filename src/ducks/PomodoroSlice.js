@@ -1,10 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { initialSettings } from '../services/settings';
 
 const initialState = {
   type: 'pomodoro',
   time: 25,
   isRunning: false,
-  start: 0
+  start: 0,
+  config: initialSettings
 };
 
 const pomodoroSlice = createSlice({
@@ -18,10 +20,13 @@ const pomodoroSlice = createSlice({
       state.time = action.payload;
     },
     setRunning: (state, action) => {
-      state.isRunning = action.payload
+      state.isRunning = action.payload;
     },
     setStart: (state, action) => {
-      state.start = action.payload
+      state.start = action.payload;
+    },
+    setConfig: (state, action) => {
+      state.config = action.payload;
     }
   }
 });
@@ -30,7 +35,8 @@ export const {
   setType,
   setTime,
   setRunning,
-  setStart
+  setStart,
+  setConfig
 } = pomodoroSlice.actions;
 
 export default pomodoroSlice.reducer;

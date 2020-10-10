@@ -2,7 +2,6 @@ import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
 import SettingsModal from './SettingsModal';
-import { initialSettings } from './services/settings';
 import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
@@ -40,7 +39,7 @@ const tasksResource = makeReduxAssets({
 
 export default function App() {
   const type = useSelector(state => state.pomodoro.type);
-  const [config, setConfig] = React.useState(initialSettings);
+  const config = useSelector(state => state.pomodoro.config);
   const [state, dispatch] = React.useReducer(
     tasksResource.reducer,
     tasksResource.initialState
@@ -60,15 +59,12 @@ export default function App() {
     <Wrapper type={type}>
       <AppHeader 
         state={mappedState}
-        dispatch={dispatch}
-        setConfig={setConfig}
         setType={setType}
       />
       <Container id="content" className="d-flex flex-column">
         <Pomodoro
           type={type}
           config={config}
-          setConfig={setConfig}
         />
         <TaskForm state={mappedState} dispatch={dispatch} />
         {!mappedState.isLoading && mappedState.tasks.length === 0 && (
@@ -85,7 +81,7 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state, setConfig }) => {
+const AppHeader = ({ state }) => {
   const [show, setShow] = React.useState(false);
 
   return (
@@ -94,7 +90,6 @@ const AppHeader = ({ state, setConfig }) => {
         <SettingsModal
             setShow={setShow}
             show={show}
-            setConfig={setConfig}
         />
         <Navbar.Brand>Octo-tasks</Navbar.Brand>
           <Navbar.Text>

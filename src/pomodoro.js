@@ -10,7 +10,8 @@ import {
   setType,
   setTime,
   setRunning,
-  setStart
+  setStart,
+  setConfig
 } from './ducks/PomodoroSlice';
 
 const types = {
@@ -19,10 +20,11 @@ const types = {
   longBreak: 'Long Break' 
 }
 
-export default function Pomodoro({ type, config, setConfig }) {
+export default function Pomodoro({ type }) {
   const time = useSelector(state => state.pomodoro.time);
   const isRunning = useSelector(state => state.pomodoro.isRunning);
   const start = useSelector(state => state.pomodoro.start);
+  const config = useSelector(state => state.pomodoro.config);
 
   return (
     <div className="pomorodo__wrapper d-flex flex-column p-3 mt-4 rounded mb-4">
@@ -32,7 +34,6 @@ export default function Pomodoro({ type, config, setConfig }) {
         start={start}
         type={type}
         config={config}
-        setConfig={setConfig}
       />
       <PomodoroClock
         time={time}
@@ -158,12 +159,12 @@ const PomodoroActions = props => {
   );
 };
 
-const PomodoroTabs = ({ type, config, setConfig, ...props }) => {
+const PomodoroTabs = ({ type, config, ...props }) => {
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    Settings.read().then(setConfig);
-  }, [setConfig]);
+    Settings.read().then(settings => dispatch(setConfig(settings)));
+  }, [dispatch]);
 
   const setTimerType = type => {
     setTime(config[type]);

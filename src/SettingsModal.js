@@ -5,6 +5,8 @@ import Row from 'react-bootstrap/Row';
 import Container from 'react-bootstrap/Container';
 import get from 'lodash.get';
 import Settings from './services/settings';
+import { setConfig } from './ducks/PomodoroSlice';
+import { useDispatch } from 'react-redux';
 
 export default function SettingsModal(props) {
   return (
@@ -13,7 +15,7 @@ export default function SettingsModal(props) {
         <Modal.Title>Settings</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <SettingsForm setConfig={props.setConfig}/>
+        <SettingsForm />
       </Modal.Body>
     </Modal>
   );
@@ -25,9 +27,10 @@ const initialErrors = {
   longBreak: ''
 };
 
-const SettingsForm = ({ setConfig, ...props }) => {
+const SettingsForm = () => {
   const [settings, setSettings] = React.useState(null);
   const [errors, setErrors] = React.useState(initialErrors);
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     if (settings === null) {
@@ -40,8 +43,8 @@ const SettingsForm = ({ setConfig, ...props }) => {
     }
 
     Settings.update(settings);
-    setConfig(settings);
-  }, [setConfig, settings, errors]);
+    dispatch(setConfig(settings));
+  }, [settings, errors, dispatch]);
 
   React.useEffect(() => {
     Settings.read().then(setSettings);
