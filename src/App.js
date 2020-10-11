@@ -11,12 +11,7 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Alert from 'react-bootstrap/Alert';
 import Pomodoro from './pomodoro.js';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  setType,
-  setTime,
-  setStart,
-  setRunning
-} from './ducks/PomodoroSlice';
+import { setType } from './ducks/PomodoroSlice';
 import { tasksActions } from './ducks/TaskResource';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -63,15 +58,10 @@ const Wrapper = ({ children }) => {
 
 const AppHeader = ({ state }) => {
   const [show, setShow] = React.useState(false);
-  const config = useSelector(state => state.pomodoro.config);
   const dispatch = useDispatch();
 
   const onClickTypeFn = type => () => {
-    setTime(config[type]);
-
     dispatch(setType(type));
-    dispatch(setStart(0));
-    dispatch(setRunning(false));
   }
 
   return (

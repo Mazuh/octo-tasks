@@ -157,13 +157,9 @@ const PomodoroTabs = () => {
     Settings.read().then(settings => dispatch(setConfig(settings)));
   }, [dispatch]);
 
-  const setTimerType = type => {
-    setTime(config[type]);
-
+  const onClickTypeFn = type => () => {
     dispatch(setType(type));
-    dispatch(setStart(0));
-    dispatch(setRunning(false));
-  };
+  }
 
   React.useEffect(() => {
     dispatch(setTime(config[type]));
@@ -176,9 +172,7 @@ const PomodoroTabs = () => {
         variant="primary"
         type="button"
         disabled={type === 'pomodoro'}
-        onClick={() => {
-          setTimerType('pomodoro');
-        }}
+        onClick={onClickTypeFn('pomodoro')}
       >
         Pomodoro
       </Button>
@@ -187,9 +181,7 @@ const PomodoroTabs = () => {
         variant="primary"
         type="button"
         disabled={type === 'shortBreak'}
-        onClick={() => {
-          setTimerType('shortBreak');
-        }}
+        onClick={onClickTypeFn('shortBreak')}
       >
         Short Break
       </Button>
@@ -198,9 +190,7 @@ const PomodoroTabs = () => {
         variant="primary"
         type="button"
         disabled={type === 'longBreak'}
-        onClick={() => {
-          setTimerType('longBreak');
-        }}
+        onClick={onClickTypeFn('longBreak')}
       >
         Long Break
       </Button>

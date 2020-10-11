@@ -15,6 +15,9 @@ const pomodoroSlice = createSlice({
   reducers: {
     setType: (state, action) => {
       state.type = action.payload;
+      state.time = state.config[action.payload];
+      state.start = 0;
+      state.isRunning = false;
     },
     setTime: (state, action) => {
       state.time = action.payload;
