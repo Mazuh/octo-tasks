@@ -43,8 +43,6 @@ const tasksResource = makeReduxAssets({
 });
 
 export default function App() {
-  const type = useSelector(state => state.pomodoro.type);
-  const config = useSelector(state => state.pomodoro.config);
   const [state, dispatch] = React.useReducer(
     tasksResource.reducer,
     tasksResource.initialState
@@ -61,17 +59,12 @@ export default function App() {
   }, [state.error]);
 
   return (
-    <Wrapper type={type}>
+    <Wrapper>
       <AppHeader 
         state={mappedState}
-        setType={setType}
-        config={config}
       />
       <Container id="content" className="d-flex flex-column">
-        <Pomodoro
-          type={type}
-          config={config}
-        />
+        <Pomodoro />
         <TaskForm state={mappedState} dispatch={dispatch} />
         {!mappedState.isLoading && mappedState.tasks.length === 0 && (
           <Flash variant="light">No tasks yet.</Flash>
@@ -83,12 +76,16 @@ export default function App() {
   );
 }
 
-const Wrapper = ({ children, type }) => (
-  <div className={`wrapper wrapper--${type}`}>{children}</div>
-);
+const Wrapper = ({ children }) => {
+  const type = useSelector(state => state.pomodoro.type);
+  return (
+    <div className={`wrapper wrapper--${type}`}>{children}</div>
+  );
+}
 
-const AppHeader = ({ state, config }) => {
+const AppHeader = ({ state }) => {
   const [show, setShow] = React.useState(false);
+  const config = useSelector(state => state.pomodoro.config);
   const dispatch = useDispatch();
 
   const onClickTypeFn = type => () => {

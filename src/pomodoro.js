@@ -20,51 +20,38 @@ const types = {
   longBreak: 'Long Break' 
 }
 
-export default function Pomodoro({ type }) {
-  const time = useSelector(state => state.pomodoro.time);
-  const isRunning = useSelector(state => state.pomodoro.isRunning);
-  const start = useSelector(state => state.pomodoro.start);
-  const config = useSelector(state => state.pomodoro.config);
-
+export default function Pomodoro() {
   return (
     <div className="pomorodo__wrapper d-flex flex-column p-3 mt-4 rounded mb-4">
-      <PomodoroTabs
-        time={time}
-        isRunning={isRunning}
-        start={start}
-        type={type}
-        config={config}
-      />
-      <PomodoroClock
-        time={time}
-        isRunning={isRunning}
-        start={start}
-        type={type}
-        config={config}
-      />
-      <PomodoroActions
-        isRunning={isRunning}
-        start={start}
-      />
+      <PomodoroTabs />
+      <PomodoroClock />
+      <PomodoroActions />
     </div>
   );
 }
 
-const PomodoroClock = ({ config, ...props }) => {
+const PomodoroClock = () => {
   const [remainingSeconds, setRemainingSeconds] = React.useState(0);
+  const {
+    type,
+    time,
+    isRunning,
+    start,
+    config
+  } = useSelector(state => state.pomodoro);
 
   React.useEffect(() => {
-    if (props.start === 0) {
+    if (start === 0) {
       const initialTimestamp = Date.now();
-      const end = initialTimestamp + props.time * 60 * 1000;
+      const end = initialTimestamp + time * 60 * 1000;
       setRemainingSeconds((end - Date.now() + 1) / 1000);
     }
 
-    if (!props.isRunning) {
+    if (!isRunning) {
       return;
     }
     const countdown = setTimeout(() => {
-      const end = props.start + props.time * 60 * 1000;
+      const end = start + time * 60 * 1000;
       const nextRemainingSeconds = (end - Date.now() + 1) / 1000;
       const sound = new Howl({
         src: config.sound
@@ -74,7 +61,7 @@ const PomodoroClock = ({ config, ...props }) => {
       } else {
         sound.play();
         Push.create("Octo-tasks", {
-          body: `${types[props.type]} is over!`,
+          body: `${types[type]} is over!`,
           tag: 'done',
           icon:'',
           timeout: 4000,
@@ -87,15 +74,15 @@ const PomodoroClock = ({ config, ...props }) => {
     }, 200);
 
     return () => clearTimeout(countdown);
-  }, [props, remainingSeconds, config.sound]);
+  }, [remainingSeconds, config.sound, isRunning, time, type, start]);
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
   
 
   React.useEffect(() => {
-    document.title = `${minutes}:${seconds} ${types[props.type]}`
-  }, [minutes, seconds, props.type])
+    document.title = `${minutes}:${seconds} ${types[type]}`
+  }, [minutes, seconds, type])
 
   return (
     <div className="pomorodo__time d-flex justify-content-center align-items-center flex-grow-1">
@@ -106,23 +93,25 @@ const PomodoroClock = ({ config, ...props }) => {
 
 const PomodoroActions = props => {
   const [currentPause, setCurrentPause] = React.useState(0);
+  const isRunning = useSelector(state => state.pomodoro.isRunning);
+  const start = useSelector(state => state.pomodoro.start);
   const dispatch = useDispatch();
 
-  const start = () => {
-    if (props.start === 0) {
+  const startTimer = () => {
+    if (start === 0) {
       dispatch(setStart(Date.now()));
     } else {
-      dispatch(setStart(props.start + Date.now() - currentPause));
+      dispatch(setStart(start + Date.now() - currentPause));
     }
     dispatch(setRunning(true));
   };
 
-  const pause = () => {
+  const pauseTimer = () => {
     dispatch(setRunning(false));
     setCurrentPause(Date.now());
   };
 
-  const reset = () => {
+  const resetTimer = () => {
     dispatch(setStart(0));
     dispatch(setRunning(false));
   };
@@ -133,8 +122,8 @@ const PomodoroActions = props => {
         className="ml-auto mr-2"
         variant="primary"
         type="button"
-        disabled={props.isRunning}
-        onClick={start}
+        disabled={isRunning}
+        onClick={startTimer}
       >
         Start
       </Button>
@@ -142,8 +131,8 @@ const PomodoroActions = props => {
         className="ml-2 mr-2"
         variant="danger"
         type="button"
-        disabled={!props.isRunning}
-        onClick={pause}
+        disabled={!isRunning}
+        onClick={pauseTimer}
       >
         Pause
       </Button>
@@ -151,7 +140,7 @@ const PomodoroActions = props => {
         className="mr-auto ml-2"
         variant="secondary"
         type="button"
-        onClick={reset}
+        onClick={resetTimer}
       >
         Reset
       </Button>
@@ -159,7 +148,9 @@ const PomodoroActions = props => {
   );
 };
 
-const PomodoroTabs = ({ type, config, ...props }) => {
+const PomodoroTabs = () => {
+  const type = useSelector(state => state.pomodoro.type);
+  const config = useSelector(state => state.pomodoro.config);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
