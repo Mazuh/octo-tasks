@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import pomodoroReducer from '../ducks/PomodoroSlice';
+import tasksReducer from '../ducks/TaskResource';
 
 const store = configureStore({
   reducer: {
-    pomodoro: pomodoroReducer
+    pomodoro: pomodoroReducer,
+    tasks: tasksReducer
   }
 });
 
