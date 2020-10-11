@@ -12,8 +12,13 @@ import { makeReduxAssets } from 'resource-toolkit';
 import Alert from 'react-bootstrap/Alert';
 import ToDo from './services/ToDo';
 import Pomodoro from './pomodoro.js';
-import { useSelector } from 'react-redux';
-import { setType } from './ducks/PomodoroSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  setType,
+  setTime,
+  setStart,
+  setRunning
+} from './ducks/PomodoroSlice';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
@@ -60,6 +65,7 @@ export default function App() {
       <AppHeader 
         state={mappedState}
         setType={setType}
+        config={config}
       />
       <Container id="content" className="d-flex flex-column">
         <Pomodoro
@@ -81,8 +87,17 @@ const Wrapper = ({ children, type }) => (
   <div className={`wrapper wrapper--${type}`}>{children}</div>
 );
 
-const AppHeader = ({ state }) => {
+const AppHeader = ({ state, config }) => {
   const [show, setShow] = React.useState(false);
+  const dispatch = useDispatch();
+
+  const onClickTypeFn = type => () => {
+    setTime(config[type]);
+
+    dispatch(setType(type));
+    dispatch(setStart(0));
+    dispatch(setRunning(false));
+  }
 
   return (
     <Navbar expand="lg" variant="dark">
@@ -105,9 +120,9 @@ const AppHeader = ({ state }) => {
         <Navbar.Toggle className="d-md-none d-sm-fle" aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="d-md-none d-sm-flex mr-auto ">
-            <Nav.Link onClick={() => setType('pomodoro')} href="#pomodoro">Pomodoro</Nav.Link>
-            <Nav.Link onClick={() => setType('shortBreak')} href="#shorbreak">Short Break</Nav.Link>
-            <Nav.Link onClick={() => setType('longBreak')} href="#longbreak">Long Break</Nav.Link>
+            <Nav.Link onClick={onClickTypeFn('pomodoro')} href="#pomodoro">Pomodoro</Nav.Link>
+            <Nav.Link onClick={onClickTypeFn('shortBreak')} href="#shorbreak">Short Break</Nav.Link>
+            <Nav.Link onClick={onClickTypeFn('longBreak')} href="#longbreak">Long Break</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
