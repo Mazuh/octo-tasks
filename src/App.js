@@ -2,52 +2,28 @@ import React from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
 import SettingsModal from './SettingsModal';
-import { initialSettings } from './services/settings';
 import Nav from 'react-bootstrap/Nav';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Navbar from 'react-bootstrap/Navbar';
 import InputGroup from 'react-bootstrap/InputGroup';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { makeReduxAssets } from 'resource-toolkit';
 import Alert from 'react-bootstrap/Alert';
-import ToDo from './services/ToDo';
 import Pomodoro from './pomodoro.js';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { setType } from './ducks/PomodoroSlice';
+import { tasksActions } from './ducks/TaskResource';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
-const tasksResource = makeReduxAssets({
-  name: 'tasks',
-  idKey: 'uuid',
-  gateway: {
-    create: description => {
-      return ToDo.create(description);
-    },
-    readMany: () => {
-      return ToDo.read();
-    },
-    update: task => {
-      return ToDo.update(task.uuid, task);
-    },
-    delete: task => {
-      return ToDo.delete(task.uuid);
-    }
-  }
-});
-
 export default function App() {
-  const [type, setType] = React.useState('pomodoro');
-  const [config, setConfig] = React.useState(initialSettings);
-  const [state, dispatch] = React.useReducer(
-    tasksResource.reducer,
-    tasksResource.initialState
-  );
+  const state = useSelector(state => state.tasks);
   const mappedState = {
     ...state,
     tasks: state.items
   };
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     if (state.error) {
@@ -55,22 +31,13 @@ export default function App() {
     }
   }, [state.error]);
 
-
   return (
-    <Wrapper type={type}>
+    <Wrapper>
       <AppHeader 
         state={mappedState}
-        dispatch={dispatch}
-        setConfig={setConfig}
-        setType={setType}
       />
       <Container id="content" className="d-flex flex-column">
-        <Pomodoro
-          type={type}
-          setType={setType}
-          config={config}
-          setConfig={setConfig}
-        />
+        <Pomodoro />
         <TaskForm state={mappedState} dispatch={dispatch} />
         {!mappedState.isLoading && mappedState.tasks.length === 0 && (
           <Flash variant="light">No tasks yet.</Flash>
@@ -82,12 +49,20 @@ export default function App() {
   );
 }
 
-const Wrapper = ({ children, type }) => (
-  <div className={`wrapper wrapper--${type}`}>{children}</div>
-);
+const Wrapper = ({ children }) => {
+  const type = useSelector(state => state.pomodoro.type);
+  return (
+    <div className={`wrapper wrapper--${type}`}>{children}</div>
+  );
+}
 
-const AppHeader = ({ state, setType, setConfig }) => {
+const AppHeader = ({ state }) => {
   const [show, setShow] = React.useState(false);
+  const dispatch = useDispatch();
+
+  const onClickTypeFn = type => () => {
+    dispatch(setType(type));
+  }
 
   return (
     <Navbar expand="lg" variant="dark">
@@ -95,7 +70,6 @@ const AppHeader = ({ state, setType, setConfig }) => {
         <SettingsModal
             setShow={setShow}
             show={show}
-            setConfig={setConfig}
         />
         <Navbar.Brand>Octo-tasks</Navbar.Brand>
           <Navbar.Text>
@@ -111,9 +85,9 @@ const AppHeader = ({ state, setType, setConfig }) => {
         <Navbar.Toggle className="d-md-none d-sm-fle" aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="d-md-none d-sm-flex mr-auto ">
-            <Nav.Link onClick={() => setType('pomodoro')} href="#pomodoro">Pomodoro</Nav.Link>
-            <Nav.Link onClick={() => setType('shortBreak')} href="#shorbreak">Short Break</Nav.Link>
-            <Nav.Link onClick={() => setType('longBreak')} href="#longbreak">Long Break</Nav.Link>
+            <Nav.Link onClick={onClickTypeFn('pomodoro')} href="#pomodoro">Pomodoro</Nav.Link>
+            <Nav.Link onClick={onClickTypeFn('shortBreak')} href="#shorbreak">Short Break</Nav.Link>
+            <Nav.Link onClick={onClickTypeFn('longBreak')} href="#longbreak">Long Break</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
@@ -128,7 +102,7 @@ const TaskForm = props => {
     event.preventDefault();
     props.dispatch({ type: 'loading' });
 
-    tasksResource.actions
+    tasksActions
       .create(description)(props.dispatch)
       .then(() => {
         setDescription('');
@@ -167,7 +141,7 @@ const TaskForm = props => {
 
 const TasksList = ({ dispatch, ...props }) => {
   React.useEffect(() => {
-    tasksResource.actions.readAll()(dispatch);
+    tasksActions.readAll()(dispatch);
   }, [dispatch]);
 
   const onCheckChangeFn = task => event => {
@@ -187,11 +161,11 @@ const TasksList = ({ dispatch, ...props }) => {
   const patchTask = (task, patch) => {
     const updatingTask = { ...task, ...patch };
 
-    tasksResource.actions.update(task.uuid, updatingTask)(dispatch);
+    tasksActions.update(task.uuid, updatingTask)(dispatch);
   };
 
   const onClickDelFn = task => () => {
-    tasksResource.actions
+    tasksActions
       .delete(
         task.uuid,
         task
