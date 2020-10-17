@@ -10,19 +10,19 @@ the project uses [Electron](https://github.com/electron/electron). for desktop a
 
 ## Run the project (Web app)
 ```shell
-$ npm start
+npm start
 ```
 ## Run the project (Desktop app)
 ```shell
-$ npm run start-electron
+npm run start-electron
 ```
 ## Build project for production (Web app)
 ```shell
-$ npm run build
+npm run build
 ```
 
 ## Build project for production (Desktop app)
 generates a exe/rpm/deb/dmg depending on operational system
 ```shell
-$ npm run electron-pack
+npm run electron-pack
 ```
