@@ -118,7 +118,7 @@ const SettingsForm = () => {
         </Form.Group>
         <Form.Group>
           <Row>
-            <Form.Label>Example select</Form.Label>
+            <Form.Label>Notification Sound</Form.Label>
             <Form.Control
               as="select"
               value={get(settings, 'sound', '/assets/notifications-sounds/service-bell_daniel_simion.mp3')}
