@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/octo-tasks/static/css/main.1fd9c8b6.chunk.css",
+    "main.js": "/octo-tasks/static/js/main.919e0520.chunk.js",
+    "main.js.map": "/octo-tasks/static/js/main.919e0520.chunk.js.map",
+    "runtime-main.js": "/octo-tasks/static/js/runtime-main.7f3b30e3.js",
+    "runtime-main.js.map": "/octo-tasks/static/js/runtime-main.7f3b30e3.js.map",
+    "static/css/2.f39ea103.chunk.css": "/octo-tasks/static/css/2.f39ea103.chunk.css",
+    "static/js/2.7fcf8608.chunk.js": "/octo-tasks/static/js/2.7fcf8608.chunk.js",
+    "static/js/2.7fcf8608.chunk.js.map": "/octo-tasks/static/js/2.7fcf8608.chunk.js.map",
+    "index.html": "/octo-tasks/index.html",
+    "precache-manifest.3d9320022320cce82840bac823843910.js": "/octo-tasks/precache-manifest.3d9320022320cce82840bac823843910.js",
+    "service-worker.js": "/octo-tasks/service-worker.js",
+    "static/css/2.f39ea103.chunk.css.map": "/octo-tasks/static/css/2.f39ea103.chunk.css.map",
+    "static/css/main.1fd9c8b6.chunk.css.map": "/octo-tasks/static/css/main.1fd9c8b6.chunk.css.map",
+    "static/js/2.7fcf8608.chunk.js.LICENSE.txt": "/octo-tasks/static/js/2.7fcf8608.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7f3b30e3.js",
+    "static/css/2.f39ea103.chunk.css",
+    "static/js/2.7fcf8608.chunk.js",
+    "static/css/main.1fd9c8b6.chunk.css",
+    "static/js/main.919e0520.chunk.js"
+  ]
+}
