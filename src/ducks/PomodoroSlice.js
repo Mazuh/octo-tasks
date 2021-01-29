@@ -6,7 +6,8 @@ const initialState = {
   time: 25,
   isRunning: false,
   start: 0,
-  config: initialSettings
+  config: initialSettings,
+  compact: false
 };
 
 const pomodoroSlice = createSlice({
@@ -30,6 +31,9 @@ const pomodoroSlice = createSlice({
     },
     setConfig: (state, action) => {
       state.config = action.payload;
+    },
+    setCompact: (state, action) => {
+      state.compact = action.payload;
     }
   }
 });
@@ -39,7 +43,8 @@ export const {
   setTime,
   setRunning,
   setStart,
-  setConfig
+  setConfig,
+  setCompact
 } = pomodoroSlice.actions;
 
 export default pomodoroSlice.reducer;

@@ -11,14 +11,18 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Alert from 'react-bootstrap/Alert';
 import Pomodoro from './pomodoro.js';
 import { useSelector, useDispatch } from 'react-redux';
-import { setType } from './ducks/PomodoroSlice';
+import { setType, setCompact } from './ducks/PomodoroSlice';
 import { tasksActions } from './ducks/TaskResource';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 
+const electron = window.require && window.require('electron');
+const remote = window.require && electron.remote;
+
 export default function App() {
   const state = useSelector(state => state.tasks);
+  const { compact } = useSelector(state => state.pomodoro);
   const mappedState = {
     ...state,
     tasks: state.items
@@ -30,23 +34,27 @@ export default function App() {
       toast(state.error.message);
     }
   }, [state.error]);
-
-  return (
-    <Wrapper>
-      <AppHeader 
-        state={mappedState}
-      />
-      <Container id="content" className="d-flex flex-column">
-        <Pomodoro />
-        <TaskForm state={mappedState} dispatch={dispatch} />
-        {!mappedState.isLoading && mappedState.tasks.length === 0 && (
-          <Flash variant="light">No tasks yet.</Flash>
-        )}
-        <TasksList state={mappedState} dispatch={dispatch} />
-        <ToastContainer />
-      </Container>
-    </Wrapper>
-  );
+  if (!compact) {
+    return (
+      <Wrapper>
+        <AppHeader
+          state={mappedState}
+        />
+        <Container id="content" className="d-flex flex-column">
+          <Pomodoro />
+          <TaskForm state={mappedState} dispatch={dispatch} />
+          {!mappedState.isLoading && mappedState.tasks.length === 0 && (
+            <Flash variant="light">No tasks yet.</Flash>
+          )}
+          <TasksList state={mappedState} dispatch={dispatch} />
+          <ToastContainer />
+        </Container>
+      </Wrapper>
+    );
+  }
+  else {
+    return <Pomodoro />
+  }
 }
 
 const Wrapper = ({ children }) => {
@@ -60,6 +68,10 @@ const AppHeader = ({ state }) => {
   const [show, setShow] = React.useState(false);
   const dispatch = useDispatch();
 
+  const onClickCompact = () => {
+    dispatch(setCompact(true));
+    remote.getGlobal("setCompactMode")();
+  }
   const onClickTypeFn = type => () => {
     dispatch(setType(type));
   }
@@ -68,20 +80,27 @@ const AppHeader = ({ state }) => {
     <Navbar expand="lg" variant="dark">
       <Container>
         <SettingsModal
-            setShow={setShow}
-            show={show}
+          setShow={setShow}
+          show={show}
         />
         <Navbar.Brand>Octo-tasks</Navbar.Brand>
-          <Navbar.Text>
-            {state.isLoading ? (
-              <small> Loading...</small>
-              ) : (
+        <Navbar.Text>
+          {state.isLoading ? (
+            <small> Loading...</small>
+          ) : (
               <Button variant="primary" onClick={() => setShow(true)}>
                 Settings
               </Button>
-              )
-            }
+            )
+          }
+        </Navbar.Text>
+        {window.require &&
+          <Navbar.Text>
+            <Button variant="primary" onClick={onClickCompact}>
+              compact mode
+          </Button>
           </Navbar.Text>
+        }
         <Navbar.Toggle className="d-md-none d-sm-fle" aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="d-md-none d-sm-flex mr-auto ">
