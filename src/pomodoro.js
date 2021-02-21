@@ -11,23 +11,40 @@ import {
   setTime,
   setRunning,
   setStart,
-  setConfig
+  setConfig,
+  setCompact
 } from './ducks/PomodoroSlice';
+
+const electron = window.require && window.require('electron');
+const remote = window.require && electron.remote;
+
+// veja depois como que coloca o global function do electron
 
 const types = {
   pomodoro: 'Pomodoro',
   shortBreak: 'Short Break',
-  longBreak: 'Long Break' 
+  longBreak: 'Long Break'
 }
 
 export default function Pomodoro() {
-  return (
-    <div className="pomorodo__wrapper d-flex flex-column p-3 mt-4 rounded mb-4">
-      <PomodoroTabs />
-      <PomodoroClock />
-      <PomodoroActions />
-    </div>
-  );
+  const { compact } = useSelector(state => state.pomodoro);
+  if (!compact) {
+    return (
+      <div className="pomorodo__wrapper d-flex flex-column p-3 mt-4 rounded mb-4">
+        <PomodoroTabs />
+        <PomodoroClock />
+        <PomodoroActions />
+      </div>
+    );
+  }
+  else {
+    return (
+      <div className="wrapper--pomodoro--compact d-flex flex-column p-1 pb-2 rounded">
+        <PomodoroClock />
+        <PomodoroActions />
+      </div>
+    )
+  }
 }
 
 const PomodoroClock = () => {
@@ -37,7 +54,8 @@ const PomodoroClock = () => {
     time,
     isRunning,
     start,
-    config
+    config,
+    compact
   } = useSelector(state => state.pomodoro);
 
   React.useEffect(() => {
@@ -63,14 +81,14 @@ const PomodoroClock = () => {
         Push.create("Octo-tasks", {
           body: `${types[type]} is over!`,
           tag: 'done',
-          icon:'',
+          icon: '',
           timeout: 4000,
           onClick: () => {
             window.focus();
             Push.close();
           }
-        });   
-      } 
+        });
+      }
     }, 200);
 
     return () => clearTimeout(countdown);
@@ -78,14 +96,16 @@ const PomodoroClock = () => {
 
   const minutes = String(Math.floor(remainingSeconds / 60)).padStart(2, 0);
   const seconds = String(Math.floor(remainingSeconds % 60)).padStart(2, 0);
-  
+  const pomodoroClass = compact ? 'pomodoro__time__compact' : 'pomorodo__time';
 
   React.useEffect(() => {
     document.title = `${minutes}:${seconds} ${types[type]}`
   }, [minutes, seconds, type])
 
   return (
-    <div className="pomorodo__time d-flex justify-content-center align-items-center flex-grow-1">
+    <div className={
+      pomodoroClass + " d-flex justify-content-center align-items-center flex-grow-1"
+    }>
       {minutes + ':' + seconds}
     </div>
   );
@@ -95,6 +115,7 @@ const PomodoroActions = props => {
   const [currentPause, setCurrentPause] = React.useState(0);
   const isRunning = useSelector(state => state.pomodoro.isRunning);
   const start = useSelector(state => state.pomodoro.start);
+  const { compact } = useSelector(state => state.pomodoro)
   const dispatch = useDispatch();
 
   const startTimer = () => {
@@ -115,6 +136,11 @@ const PomodoroActions = props => {
     dispatch(setStart(0));
     dispatch(setRunning(false));
   };
+
+  const fullMode = () => {
+    remote.getGlobal("setCompactMode")();
+    dispatch(setCompact(false));
+  }
 
   return (
     <ButtonToolbar>
@@ -137,13 +163,24 @@ const PomodoroActions = props => {
         Pause
       </Button>
       <Button
-        className="mr-auto ml-2"
+        className={compact ? "ml-2 mr-2" : "mr-auto ml-2"}
         variant="secondary"
         type="button"
         onClick={resetTimer}
       >
         Reset
       </Button>
+      {compact &&
+        <Button
+          className="mr-auto ml-2"
+          variant="secondary"
+          type="button"
+          onClick={fullMode}
+        >
+
+          Full Mode
+      </Button>
+      }
     </ButtonToolbar>
   );
 };

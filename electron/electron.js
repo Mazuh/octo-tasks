@@ -13,7 +13,20 @@ app.commandLine.hasSwitch('enable-transparent-visuals')
 console.log(os.hostname);
 
 let mainWindow;
-global.sharedObject = { testPath: '', testCommand: '' };
+let isCompact = false;
+global.setCompactMode = () => {
+  if (!isCompact) {
+    const display = electron.screen.getPrimaryDisplay();
+    const width = display.bounds.width;
+    mainWindow.setSize(350, 150);
+    mainWindow.setPosition(width - 400, 60);
+  }
+  else {
+    mainWindow.setSize(800, 600);
+    mainWindow.center();
+  }
+  isCompact = !isCompact;
+};
 function createWindow() {
   mainWindow = new BrowserWindow({
     webPreferences: {
