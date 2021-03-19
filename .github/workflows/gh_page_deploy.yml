@@ -1,0 +1,23 @@
+name: gh page deploy
+
+on:
+  workflow_dispatch:
+        
+jobs:
+  grebuild-and-deploy:et:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+      - uses: actions/checkout@v2.3.1
+    
+      - name: Install and build
+        run:
+          npm install
+          npm run deploy
+      
+      - name: Deploy
+      - uses: JamesIves/github-pages-deploy-action@4.1.0
+        with:
+          branches: gh-pages
+          folder: .
