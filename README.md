@@ -26,3 +26,8 @@ generates a exe/rpm/deb/dmg depending on operational system
 ```shell
 npm run electron-pack
 ```
+
+## Deploy on gh-pages
+```shell
+npm run deploy
+```
